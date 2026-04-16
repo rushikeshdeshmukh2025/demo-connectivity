@@ -1,0 +1,5 @@
+subscription_id = "92490899-c949-4374-b0ce-4bdd62e8c4dd"
+environment     = "prd"
+location        = "germanywestcentral"
+company_prefix  = "rus"
+region_short    = "gwc"
