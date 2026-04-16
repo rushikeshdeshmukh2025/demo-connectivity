@@ -25,4 +25,5 @@ resource "azurerm_subnet_network_security_group_association" "nsg_association" {
 
   subnet_id                 = each.value
   network_security_group_id = azurerm_network_security_group.nsg.id
+  # each.key is a static logical name, each.value is the apply-time subnet ID
 }

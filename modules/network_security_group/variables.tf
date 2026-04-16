@@ -14,9 +14,9 @@ variable "location" {
 }
 
 variable "subnet_ids" {
-  description = "Set of subnet resource IDs to associate with the NSG."
-  type        = set(string)
-  default     = []
+  description = "Map of subnet logical name to subnet resource ID to associate with the NSG."
+  type        = map(string)
+  default     = {}
 }
 
 variable "security_rules" {

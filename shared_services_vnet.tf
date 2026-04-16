@@ -2,7 +2,7 @@ module "shared_services_vnet" {
   source = "./modules/azure_virtual_network"
 
   name                = "vnet_${local.name_prefix}_shared_services_${local.name_suffix}"
-  resource_group_name = azurerm_resource_group.connectivity.name
+  resource_group_name = azurerm_resource_group.shared_services.name
   location            = var.location
   address_space       = ["10.0.2.0/23"]
 

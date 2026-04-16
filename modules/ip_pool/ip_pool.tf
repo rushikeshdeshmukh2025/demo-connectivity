@@ -13,7 +13,7 @@ resource "azurerm_network_manager" "ip_pool" {
 
 data "azurerm_client_config" "current" {}
 
-resource "azurerm_network_manager_ip_pool" "ip_pool" {
+resource "azurerm_network_manager_ipam_pool" "ip_pool" {
   name               = var.name
   network_manager_id = azurerm_network_manager.ip_pool.id
   location           = var.location
