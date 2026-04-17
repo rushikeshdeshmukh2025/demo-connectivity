@@ -1,5 +1,5 @@
 ---
-name: Terraform to drawio architecture
+name: Full Terraform to drawio architecture
 description: Generate a Draw.io diagram from Terraform files, with one tab per environment.
 tools:
   - search/codebase
@@ -51,7 +51,9 @@ A single `architecture.drawio` file is produced. The outer wrapper is:
       <root>
         <mxCell id="0"/>
         <mxCell id="1" parent="0"/>
-        <!-- resource nodes and edges for this environment go here -->
+        <!-- ALL mxCell id values below MUST be prefixed with {env_slug}- -->
+        <!-- e.g. dev-rg-001, dev-vnet-001, dev-edge-001 for the DEV tab  -->
+        <!-- resource nodes and edges for this environment go here          -->
       </root>
     </mxGraphModel>
   </diagram>
@@ -93,13 +95,16 @@ Every resource node **must** use the `image;aspect=fixed;…` style format shown
 `image=img/lib/azure2/…` segment selects the Azure2 icon.
 
 ```
-image;aspect=fixed;html=1;points=[];align=center;fontSize=11;fontColor=#333333;shadow=1;strokeColor=#e0e0e0;fillColor=#ffffff;image=img/lib/azure2/{CATEGORY}/{ICON_FILENAME}.svg;
+image;aspect=fixed;html=1;points=[];align=center;arcSize=10;rounded=1;fontSize=11;fontColor=#333333;shadow=1;strokeColor=#e0e0e0;fillColor=#ffffff;image=img/lib/azure2/{CATEGORY}/{ICON_FILENAME}.svg;
 ```
 
 - **`html=1` is mandatory on every `<mxCell>`** — both swimlane containers and `image` nodes —
   without exception. Omitting it causes raw HTML tags to appear as literal text in the diagram.
 - `aspect=fixed` preserves the icon's aspect ratio.
+- `arcSize=10;rounded=1` gives nodes rounded corners matching the Microsoft Azure diagram style.
 - `points=[]` removes unwanted connection-point dots from the icon.
+- **Icon placement:** position the icon centred on top of the cell with the resource label displayed
+  directly below it. Do not place the label beside or overlapping the icon.
 
 ### Label format
 
@@ -199,6 +204,20 @@ unrelated icon. Render it as a plain labelled rounded rectangle:
 rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;fontColor=#333333;
 ```
 
+### Swimlane container style
+
+When grouping related resources (e.g. all resources in a resource group, or all resources in a
+virtual network), wrap them in a swimlane cell using this style:
+
+```
+swimlan;startSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=12;html=1;
+```
+
+- Use a lighter fill (`fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;`) for nested
+  swimlanes (e.g. a subnet inside a VNet swimlane).
+- The swimlane `value` label should be the resource-group or VNet name resolved from variables.
+- **`html=1` is required on swimlane cells** just as it is on resource nodes.
+
 ### Arrow styling
 
 Every edge **must** include `flowAnimation=1`. Use the table below to select the correct style:
@@ -211,6 +230,10 @@ Every edge **must** include `flowAnimation=1`. Use the table below to select the
 
 `flowAnimation=1` is **mandatory** on every edge `<mxCell>` — never omit it.
 
+> **Critical:** `flowAnimation=1` is the single most important edge attribute. Always include it on
+> **every** `<mxCell>` that represents an arrow or dependency relationship, without exception. An
+> edge missing `flowAnimation=1` will not animate in Draw.io and indicates an incomplete diagram.
+
 ---
 
 ## Full execution steps
@@ -222,19 +245,25 @@ Every edge **must** include `flowAnimation=1`. Use the table below to select the
    - **N `<diagram>` blocks will be produced — one per file, no more, no less.**
 
 2. **Parse Terraform**
-   - Read `main.tf` and any referenced modules.
-   - Collect all resource blocks: type, logical name, arguments.
+   - Read every root-level `.tf` file and any referenced module files.
+   - Collect all resource blocks: type, logical name, arguments, and API versions.
+   - Identify all `locals` blocks — these typically compute resolved resource names from variable
+     interpolations (e.g. `"${var.company_prefix}_${var.environment}_${var.region_short}"`). Use
+     the resolved local values as node labels, not the raw variable reference strings.
 
 3. **For each environment file (repeat N times)**
-   - Parse the `.tfvars` file; merge with `variables.tf` defaults.
-   - Resolve variable references in resource names and arguments.
-   - Build the dependency graph (detect `depends_on`, `.id` refs, module outputs).
-   - Generate a `<diagram>` block:
-     - `name` = `ENV_NAME`, `id` = `env-{env_slug}`
-     - One node per resource using the `image;aspect=fixed;…` style and correct icon path.
-     - One edge per dependency with `flowAnimation=1`.
-     - All `mxCell` IDs prefixed with `{env_slug}-`.
-     - Group related resources inside swimlane containers where appropriate.
+   1. Parse the `.tfvars` file; merge values with `variables.tf` defaults.
+   2. Resolve all variable and local references so every resource name and SKU is a concrete string.
+   3. Build the dependency graph: detect `depends_on` blocks, `.id` property references, and module
+      output usage.
+   4. Generate a `<diagram>` block with `name` = `ENV_NAME` and `id` = `env-{env_slug}`.
+   5. For each resource: emit one `<mxCell>` node using the `image;aspect=fixed;…` style template
+      and the correct icon path from the Icon Path Reference table.
+   6. For each dependency edge: emit one `<mxCell>` edge with `flowAnimation=1` and the appropriate
+      arrow style from the Arrow styling table.
+   7. Every `mxCell` `id` **must** be prefixed with `{env_slug}-` (e.g. `dev-rg-001`).
+   8. Group resources that share a resource group or virtual network inside swimlane containers using
+      the Swimlane container style defined above.
 
 4. **Assemble output**
    - Wrap all N `<diagram>` blocks inside a single `<mxfile>` root element.

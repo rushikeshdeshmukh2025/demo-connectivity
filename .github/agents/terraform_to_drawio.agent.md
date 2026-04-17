@@ -1,5 +1,5 @@
 ---
-name: old Terraform to drawio architecture
+name: Terraform to drawio architecture
 description: Generate a Draw.io diagram from Terraform files.
 tools:
   - search/codebase
@@ -24,7 +24,7 @@ Each Azure resource becomes a labeled node using the official Draw.io Azure2 ico
 
 ### Icon Path Reference
 
-| Resource Type (Terraform) | Draw.io Image Path (`img/lib/azure2/...`) |
+| Resource Type (Terraform) | `image=img/lib/azure2/…` value |
 | :--- | :--- |
 | **Networking** | |
 | `azurerm_virtual_network` | `networking/Virtual_Networks.svg` |
@@ -44,6 +44,8 @@ Each Azure resource becomes a labeled node using the official Draw.io Azure2 ico
 | `azurerm_express_route_circuit` | `networking/ExpressRoute_Circuits.svg` |
 | `azurerm_virtual_network_gateway` | `networking/Virtual_Network_Gateways.svg` |
 | `azurerm_vpn_gateway` | `networking/Virtual_Network_Gateways.svg` |
+| `azurerm_network_manager` | `other/Azure_Network_Manager.svg` |
+| `azurerm_network_manager_ip_pool` | `other/Azure_Network_Manager.svg` |
 | `azurerm_lb` | `networking/Load_Balancers.svg` |
 | `azurerm_frontdoor` | `networking/Front_Doors.svg` |
 | `azurerm_traffic_manager_profile` | `networking/Traffic_Manager_Profiles.svg` |
@@ -54,7 +56,6 @@ Each Azure resource becomes a labeled node using the official Draw.io Azure2 ico
 | `azurerm_network_watcher` | `networking/Network_Watcher.svg` |
 | `azurerm_web_application_firewall_policy` | `networking/Web_Application_Firewall_Policies_WAF.svg` |
 | `azurerm_ddos_protection_plan` | `networking/DDoS_Protection_Plans.svg` |
-| `azurerm_network_manager` | `other/Azure_Network_Manager.svg` |
 | **Compute** | |
 | `azurerm_linux_virtual_machine` | `compute/Virtual_Machine.svg` |
 | `azurerm_windows_virtual_machine` | `compute/Virtual_Machine.svg` |
@@ -68,7 +69,7 @@ Each Azure resource becomes a labeled node using the official Draw.io Azure2 ico
 | `azurerm_container_registry` | `containers/Container_Registries.svg` |
 | `azurerm_service_fabric_cluster` | `compute/Service_Fabric_Clusters.svg` |
 | `azurerm_batch_account` | `compute/Batch_Accounts.svg` |
-| **Storage &amp; Databases** | |
+| **Storage & Databases** | |
 | `azurerm_storage_account` | `storage/Storage_Accounts.svg` |
 | `azurerm_mssql_server` | `databases/SQL_Server.svg` |
 | `azurerm_mssql_database` | `databases/SQL_Database.svg` |
@@ -79,11 +80,11 @@ Each Azure resource becomes a labeled node using the official Draw.io Azure2 ico
 | `azurerm_sql_managed_instance` | `databases/SQL_Managed_Instance.svg` |
 | `azurerm_data_factory` | `databases/Data_Factory.svg` |
 | `azurerm_synapse_workspace` | `databases/Azure_Synapse_Analytics.svg` |
-| **Security &amp; Identity** | |
+| **Security & Identity** | |
 | `azurerm_key_vault` | `security/Key_Vaults.svg` |
 | `azurerm_user_assigned_identity` | `identity/Managed_Identities.svg` |
 | `azurerm_application_security_group` | `security/Application_Security_Groups.svg` |
-| **Management &amp; Monitoring** | |
+| **Management & Monitoring** | |
 | `azurerm_log_analytics_workspace` | `management_governance/Log_Analytics_Workspaces.svg` |
 | `azurerm_resource_group` | `general/Resource_Groups.svg` |
 | `azurerm_application_insights` | `management_governance/Application_Insights.svg` |
@@ -93,7 +94,7 @@ Each Azure resource becomes a labeled node using the official Draw.io Azure2 ico
 | `azurerm_eventgrid_topic` | `integration/Event_Grid_Topics.svg` |
 | `azurerm_logic_app_workflow` | `integration/Logic_Apps.svg` |
 | `azurerm_api_management` | `app_services/API_Management_Services.svg` |
-| **AI &amp; Machine Learning** | |
+| **AI & Machine Learning** | |
 | `azurerm_cognitive_account` | `ai_machine_learning/Cognitive_Services.svg` |
 | `azurerm_machine_learning_workspace` | `ai_machine_learning/Machine_Learning.svg` |
 | **IoT** | |
@@ -152,6 +153,6 @@ The critical attribute is `flowAnimation=1` — **always** include it on every `
    - Wrap related resources in a swimlane
 
 4. **Write the output file**
-   - Save as `architecture.drawio`
+   - Save as `simplearchitecture.drawio`
    - Validate that the XML is well-formed
    - NEVER EVER open the online version of DrawIO
