@@ -1,5 +1,5 @@
 ---
-name: Terraform to drawio architecture
+name: Basic Terraform to drawio architecture
 description: Generate a Draw.io diagram from Terraform files.
 tools:
   - search/codebase
