@@ -27,6 +27,12 @@ variable "subnets" {
   default = {}
 }
 
+variable "ip_pool_id" {
+  description = "Resource ID of the Network Manager IP pool from which this VNet's address space is allocated. Used for traceability."
+  type        = string
+  default     = null
+}
+
 variable "tags" {
   description = "Tags to apply to the Virtual Network."
   type        = map(string)

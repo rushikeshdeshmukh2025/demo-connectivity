@@ -5,6 +5,7 @@ module "shared_services_vnet" {
   resource_group_name = azurerm_resource_group.shared_services.name
   location            = var.location
   address_space       = ["10.0.2.0/23"]
+  ip_pool_id          = module.ip_pool.id
 
   subnets = {
     bastion = {

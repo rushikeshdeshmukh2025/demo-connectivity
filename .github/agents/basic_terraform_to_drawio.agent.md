@@ -153,6 +153,6 @@ The critical attribute is `flowAnimation=1` — **always** include it on every `
    - Wrap related resources in a swimlane
 
 4. **Write the output file**
-   - Save as `simplearchitecture.drawio`
+   - Save as `basic_architecture.drawio`
    - Validate that the XML is well-formed
    - NEVER EVER open the online version of DrawIO

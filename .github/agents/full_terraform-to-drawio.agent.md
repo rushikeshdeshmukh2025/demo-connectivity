@@ -36,7 +36,7 @@ tab per environment**, visualising the Azure architecture, resources, and their 
 
 ### Output file structure
 
-A single `architecture.drawio` file is produced. The outer wrapper is:
+A single `full_architecture.drawio` file is produced. The outer wrapper is:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -267,7 +267,7 @@ Every edge **must** include `flowAnimation=1`. Use the table below to select the
 
 4. **Assemble output**
    - Wrap all N `<diagram>` blocks inside a single `<mxfile>` root element.
-   - Save as `architecture.drawio`.
+   - Save as `full_architecture.drawio`.
 
 5. **Validate**
    - XML is well-formed.

@@ -7,6 +7,7 @@ module "virtual_wan_hub" {
   virtual_wan_id      = module.virtual_wan.id
   address_prefix      = "10.0.0.0/23"
   sku                 = "Standard"
+  ip_pool_id          = module.ip_pool.id
 
   tags = {
     environment = var.environment

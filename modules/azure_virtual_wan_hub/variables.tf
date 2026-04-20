@@ -29,6 +29,12 @@ variable "sku" {
   default     = "Standard"
 }
 
+variable "ip_pool_id" {
+  description = "Resource ID of the Network Manager IP pool from which this hub's address prefix is allocated. Used for traceability."
+  type        = string
+  default     = null
+}
+
 variable "tags" {
   description = "Tags to apply to the Virtual WAN Hub."
   type        = map(string)

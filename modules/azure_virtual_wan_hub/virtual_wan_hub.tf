@@ -5,5 +5,5 @@ resource "azurerm_virtual_hub" "virtual_wan_hub" {
   virtual_wan_id      = var.virtual_wan_id
   address_prefix      = var.address_prefix
   sku                 = var.sku
-  tags                = var.tags
+  tags                = var.ip_pool_id != null ? merge(var.tags, { ip_pool_id = var.ip_pool_id }) : var.tags
 }
