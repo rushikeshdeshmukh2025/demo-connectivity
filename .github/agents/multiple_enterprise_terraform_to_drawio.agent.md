@@ -1,6 +1,6 @@
 ---
-name: Multiple Environment Terraform to Draw.io
-description: Generate a Draw.io diagram from Terraform files for multiple environments.
+name: Multiple Environment Enterprise-Scale Terraform to drawio
+description: Generate an Enterprise-Scale Draw.io diagram from Terraform files for multiple environments.
 tools:
   - search/codebase
   - search/fileSearch
@@ -11,21 +11,31 @@ tools:
   - drawio/*
 ---
 
-# Terraform to Draw.io
+# Terraform to Draw.io (Multi-Environment & Enterprise-Scale)
 
-This agent reads one or more Terraform files and generates a Draw.io (`.drawio`) XML diagram that visualises the Azure architecture, resources, and their relationships.
+This agent reads one or more Terraform files and generates a multi-tabbed Draw.io (`.drawio`) XML diagram that visualises the Azure architecture, resources, and their relationships, formatted to match the Microsoft Azure Enterprise-Scale (Landing Zone) visual topology.
 
 ## Guidelines
 
-### Resource representation
+### Hierarchical Containers (Nesting)
 
-Each Azure resource becomes a labeled node using the official Draw.io Azure2 icon library (`img/lib/azure2/`).
+Unlike flat diagrams, Enterprise-Scale architectures require strict visual nesting. You must map the infrastructure into nested containers. Use the `parent` attribute in Draw.io `<mxCell>` tags to establish this hierarchy within each environment's graph:
 
+1. **Management Groups** (`azurerm_management_group`) -> *Top Level Container*
+2. **Subscriptions** (`azurerm_subscription`) -> *Nested inside Management Groups*
+3. **Resource Groups** (`azurerm_resource_group`) -> *Nested inside Subscriptions (Optional/As needed)*
+4. **Virtual Networks** (`azurerm_virtual_network`) -> *Nested inside Subscriptions or RGs*
+5. **Subnets** (`azurerm_subnet`) -> *Nested inside Virtual Networks*
+6. **Resources** -> *Nested inside Subnets, VNets, or RGs as appropriate*
 
 ### Icon Path Reference
 
 | Resource Type (Terraform) | `image=img/lib/azure2/…` value |
 | :--- | :--- |
+| **Structure & Governance (Containers)** | |
+| `azurerm_management_group` | `management_governance/Management_Groups.svg` |
+| `azurerm_subscription` | `general/Subscriptions.svg` |
+| `azurerm_resource_group` | `general/Resource_Groups.svg` |
 | **Networking** | |
 | `azurerm_virtual_network` | `networking/Virtual_Networks.svg` |
 | `azurerm_subnet` | `networking/Subnet.svg` |
@@ -45,7 +55,6 @@ Each Azure resource becomes a labeled node using the official Draw.io Azure2 ico
 | `azurerm_virtual_network_gateway` | `networking/Virtual_Network_Gateways.svg` |
 | `azurerm_vpn_gateway` | `networking/Virtual_Network_Gateways.svg` |
 | `azurerm_network_manager` | `other/Azure_Network_Manager.svg` |
-| `azurerm_network_manager_ip_pool` | `other/Azure_Network_Manager.svg` |
 | `azurerm_lb` | `networking/Load_Balancers.svg` |
 | `azurerm_frontdoor` | `networking/Front_Doors.svg` |
 | `azurerm_traffic_manager_profile` | `networking/Traffic_Manager_Profiles.svg` |
@@ -56,6 +65,7 @@ Each Azure resource becomes a labeled node using the official Draw.io Azure2 ico
 | `azurerm_network_watcher` | `networking/Network_Watcher.svg` |
 | `azurerm_web_application_firewall_policy` | `networking/Web_Application_Firewall_Policies_WAF.svg` |
 | `azurerm_ddos_protection_plan` | `networking/DDoS_Protection_Plans.svg` |
+| `azurerm_virtual_network_peering` | *(Use Edge/Arrow, see styling below)* |
 | **Compute** | |
 | `azurerm_linux_virtual_machine` | `compute/Virtual_Machine.svg` |
 | `azurerm_windows_virtual_machine` | `compute/Virtual_Machine.svg` |
@@ -86,50 +96,33 @@ Each Azure resource becomes a labeled node using the official Draw.io Azure2 ico
 | `azurerm_application_security_group` | `security/Application_Security_Groups.svg` |
 | **Management & Monitoring** | |
 | `azurerm_log_analytics_workspace` | `management_governance/Log_Analytics_Workspaces.svg` |
-| `azurerm_resource_group` | `general/Resource_Groups.svg` |
 | `azurerm_application_insights` | `management_governance/Application_Insights.svg` |
 | `azurerm_automation_account` | `management_governance/Automation_Accounts.svg` |
-| **Integration** | |
-| `azurerm_servicebus_namespace` | `integration/Service_Bus.svg` |
-| `azurerm_eventgrid_topic` | `integration/Event_Grid_Topics.svg` |
-| `azurerm_logic_app_workflow` | `integration/Logic_Apps.svg` |
-| `azurerm_api_management` | `app_services/API_Management_Services.svg` |
-| **AI & Machine Learning** | |
-| `azurerm_cognitive_account` | `ai_machine_learning/Cognitive_Services.svg` |
-| `azurerm_machine_learning_workspace` | `ai_machine_learning/Machine_Learning.svg` |
-| **IoT** | |
-| `azurerm_iothub` | `iot/IoT_Hub.svg` |
-| `azurerm_iothub_dps` | `iot/Device_Provisioning_Services.svg` |
 
-### Swimlane container style
+### Node & Container Styling
 
-When grouping related resources (e.g. all resources in a resource group, or all resources in a
-virtual network), wrap them in a swimlane cell using this style:
-
-```
-swimlan;startSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=12;html=1;
-```
-
-- Use a lighter fill (`fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;`) for nested
-  swimlanes (e.g. a subnet inside a VNet swimlane).
-- The swimlane `value` label should be the resource-group or VNet name resolved from variables.
-- **`html=1` is required on swimlane cells** just as it is on resource nodes.
-
-### Node styling
-
-Each resource node must use the following style to match the official Microsoft Azure architecture diagram style:
-
+**1. Leaf Nodes (Individual Resources)**
 - White background: `fillColor=#ffffff`
 - Rounded corners: `rounded=1;arcSize=10`
-- Icon centered on top, label below
+- Icon centered on top, label below: `shape=image;imageAlign=center;imageVerticalAlign=top;verticalAlign=bottom;`
 - Subtle shadow: `shadow=1`
 - Border: `strokeColor=#e0e0e0`
 - Font: `fontSize=11;fontColor=#333333`
-- **`html=1` is mandatory on every `<mxCell>` — both swimlane containers and `shape=image` nodes — without exception. Omitting it causes raw HTML tags to appear as literal text in the diagram.**
+
+**2. Containers (Management Groups, Subscriptions, VNets, Subnets)**
+To replicate the Azure Enterprise-Scale aesthetic, containers must act as bounding boxes with a top header containing the icon and title.
+- Base style: `shape=swimlane;horizontal=1;startSize=40;rounded=1;shadow=0;glass=0;`
+- **Management Groups:** `fillColor=#f8f9fa;strokeColor=#6c757d;dashed=1;dashPattern=1 4;fontColor=#333333;`
+- **Subscriptions:** `fillColor=#ffffff;strokeColor=#d2d6dc;dashed=0;fontColor=#333333;` (Ensure key icon is placed in the header).
+- **Virtual Networks:** `fillColor=#f3f8fb;strokeColor=#0078d4;dashed=0;fontColor=#0078d4;`
+- **Subnets:** `fillColor=#ffffff;strokeColor=#0078d4;dashed=1;fontColor=#0078d4;`
+
+**Crucial Note on Containers:** Set `isContainer="1"` and `collapsible="1"` on all `<mxCell>` container definitions.
+**HTML Requirement:** `html=1` is mandatory on every `<mxCell>` (nodes, containers, and edges).
 
 ### Label format
 
-- Node and swimlane labels must use **plain text** with line breaks encoded as `&#xa;` (XML newline entity). Do **not** use HTML tags such as `<b>`, `<br>`, or `<i>`.
+- Node and container labels must use **plain text** with line breaks encoded as `&#xa;` (XML newline entity). Do **not** use HTML tags such as `<b>`, `<br>`, or `<i>`.
 - Correct: `value="Azure Firewall&#xa;afw_rus_dev_connectivity_gwc&#xa;AZFW_Hub / Standard"`
 - Incorrect: `value="&lt;b&gt;Azure Firewall&lt;/b&gt;&lt;br&gt;afw_rus_dev_connectivity_gwc"`
 
@@ -145,11 +138,10 @@ Every edge **must** include `flowAnimation=1` in its style string so that Draw.i
 
 | Relationship type | Draw.io edge style |
 | :--- | :--- |
-| `dependsOn` (dashed) | `rounded=1;orthogonalLoop=1;jettySize=auto;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;dashed=1;endArrow=open;endFill=0;strokeColor=#666666;flowAnimation=1;` |
-| `.id` / property ref (solid) | `rounded=1;orthogonalLoop=1;jettySize=auto;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;endArrow=block;endFill=1;strokeColor=#0078D4;flowAnimation=1;` |
-| Module parameter (dotted) | `rounded=1;orthogonalLoop=1;jettySize=auto;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;dashed=1;dashPattern=1 4;endArrow=open;endFill=0;strokeColor=#999999;flowAnimation=1;` |
-
-The critical attribute is `flowAnimation=1` — **always** include it on every `<mxCell>` edge element, without exception.
+| `dependsOn` (dashed) | `rounded=1;orthogonalLoop=1;jettySize=auto;dashed=1;endArrow=open;endFill=0;strokeColor=#666666;flowAnimation=1;html=1;` |
+| `.id` / property ref (solid) | `rounded=1;orthogonalLoop=1;jettySize=auto;endArrow=block;endFill=1;strokeColor=#0078D4;flowAnimation=1;html=1;` |
+| Module parameter (dotted) | `rounded=1;orthogonalLoop=1;jettySize=auto;dashed=1;dashPattern=1 4;endArrow=open;endFill=0;strokeColor=#999999;flowAnimation=1;html=1;` |
+| VNet Peering | `rounded=1;orthogonalLoop=1;jettySize=auto;endArrow=block;startArrow=block;endFill=1;startFill=1;strokeColor=#0078D4;flowAnimation=1;html=1;` |
 
 ## Multi-Environment Handling (Tabs)
 
@@ -160,37 +152,22 @@ This agent must support multiple environments dynamically. Each environment will
 - **Evaluation:** For each `.tfvars` file found, the agent must evaluate the base `.tf` configuration using those specific variables. This means resolving environment-specific resource names, `count` meta-arguments, and `for_each` loops based on the active `.tfvars` file.
 
 **XML Structure Example:**
+```xml
 <mxfile>
   <diagram name="dev" id="unique_id_1">
-    <mxGraphModel> ... (dev resources) ... </mxGraphModel>
+    <mxGraphModel>
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        </root>
+    </mxGraphModel>
   </diagram>
   <diagram name="prod" id="unique_id_2">
-    <mxGraphModel> ... (prod resources) ... </mxGraphModel>
+    <mxGraphModel>
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        </root>
+    </mxGraphModel>
   </diagram>
 </mxfile>
-
-## Execution steps
-
-1. **Discover Environments**
-   - Use `search/listDirectory` to find all `*.tfvars` files in the workspace.
-   - Extract the environment name from the filename (e.g., `dev` from `dev.tfvars`). 
-   - *Fallback:* If no `.tfvars` files are found, assume a single "Default" environment using the base variables.
-
-2. **Parse and Evaluate (Per Environment)**
-   - For each environment, parse the Terraform file(s) and apply the specific variables from the corresponding `.tfvars` file.
-   - Accurately resolve any dynamic attributes (like `count`, `for_each`, and naming prefixes/suffixes) that rely on those variables.
-
-3. **Build the Dependency Graph (Per Environment)**
-   - Detect `dependsOn`, `.id` references, and module outputs to map relationships.
-
-4. **Generate Draw.io XML**
-   - Open a single root `<mxfile>` tag.
-   - For *each* environment, create a `<diagram name="[EnvName]" id="[random_hash]">` tag.
-   - Inside each diagram, generate the `<mxGraphModel>` containing the nodes and edges for that specific environment.
-   - Apply the node styling, HTML constraints, and arrow styling (`flowAnimation=1`) as described above.
-   - Close the `<diagram>` tag, and finally close the `<mxfile>` tag.
-
-5. **Write the output file**
-   - Save as `env_architecture.drawio`.
-   - Validate that the XML is well-formed (properly closed tags, correctly encoded `&#xa;` newlines).
-   - NEVER EVER open the online version of DrawIO.

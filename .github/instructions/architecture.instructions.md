@@ -21,7 +21,8 @@ Create below terraform modules in the /modules directory refer to azure verified
 
  Deploy below infrastructure as provided below
 
-    1. Deploy Azure IP pool with IP address range 10.0.0.0/16 for the virtual WAN hub and shared services virtual network
+    1. Create a resource group dediacted for Ippool, virtual wan hub, firewall and vpn gateway. Create another resource group for shared services virtual network and bastion host.
+    2. Create Azure IP pool with IP address range 10.0.0.0/16 for the virtual WAN hub and shared services virtual network
     2. Create Azure virtual WAN
     3. Create Azure Virtual WAN hub. Select /23 ip address from the ip pool.
     4. Deploy Azure Firewall policy and Azure Firewall in the virtual WAN hub
@@ -30,7 +31,7 @@ Create below terraform modules in the /modules directory refer to azure verified
          a. Azure Bastion subnet (/27)
          b. private endpoint subnet (/27)
          c. App subnet (/27)
-    7. Create Default NSG and  and associate with shared services virtual network
+    7. Create separate NSG for each subnets in Shared Services vnet  and associate with shared services virtual network subnets
     8. All resource should be created in Germany West Central region
 
 ***Best practices***
