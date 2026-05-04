@@ -94,12 +94,12 @@ Icons inside a subnet are positioned with their centre at `y = (subnet_height �
 
 ## NSG Badge Rules — MANDATORY
 
-- NSG associations are shown as **shield badges only** — **no connector edges** from NSG to subnet.
+- NSG associations are shown as **shield badges** on the subnet border **AND** as rules tables in a side panel to the right of the VNet.
 - Each badge is **parented to the VNet container**, not the subnet and not the RG.
 - Badge straddles the subnet's top border: `badge_y = subnet_y − 18` (relative to VNet).
-- Badge `x = subnet_x + 10` (relative to VNet).
-- Badge size: **36 × 36 px**.
-- No standalone NSG icon is placed anywhere in the diagram.
+- Badge `x = subnet_x + 10` (relative to VNet). Badge size: **36 × 36 px**.
+- No standalone NSG icon is placed anywhere in the diagram (badges only).
+- A **dashed connector edge** runs from each NSG badge (right side, `exitX=1;exitY=0.5`) to its rules table (left side, `entryX=0;entryY=0.5`); style: `endArrow=none;dashed=1;dashPattern=1 3;strokeWidth=2`.
 
 ---
 
@@ -154,10 +154,16 @@ Execute these steps **in order**, loading each skill before using it:
    - Standard size 50 × 50 px for all leaf icons.
 
 5. **Place NSG badges** — use `nsg-badge-placement` skill
-   - For every `azurerm_subnet_network_security_group_association` found by step 1, emit one NSG badge.
-   - Parent each badge to the **VNet** container.
+   - For every `azurerm_subnet_network_security_group_association` found by step 1, emit one NSG badge parented to the **VNet** container.
    - Enforce badge coordinates and size from the NSG Badge Rules above.
-   - **Do not** add any edge connecting NSG to a subnet.
+   - **Do not** add any edge from the NSG badge directly to a subnet.
+
+5b. **Emit NSG rules side-panel** — use `nsg-badge-placement` skill (side-panel section)
+   - For each NSG, emit an HTML rules table canvas-right of the VNet (`parent="1"`, x ≈ VNet right edge + 80 px).
+   - Stack tables vertically aligned with their subnet: bastion → PE → app.
+   - Parse all `security_rules` blocks from the Terraform NSG module instances. Render inbound rows, then outbound rows. Deny rows use `background:#FFEBEE`. NSGs with no custom rules show an italic placeholder row.
+   - Extend `pageWidth` by **440 px**.
+   - Emit one **dashed connector** edge per NSG (`source` = badge id, `target` = table id), style: `endArrow=none;dashed=1;dashPattern=1 3;strokeWidth=2;exitX=1;exitY=0.5;entryX=0;entryY=0.5`.
 
 6. **Add Private Endpoints** — use `private-endpoint-layout` skill *(only when ≥ 2 PEs detected)*
    - Apply the left→right PE column layout inside the PE subnet.
@@ -173,10 +179,9 @@ Execute these steps **in order**, loading each skill before using it:
    - **Omit** all NSG→subnet edges — NSG associations are represented by badges only.
 
 9. **Validate & save** — use `drawio-xml-validation` skill
-   - Run the full 22-point quality checklist.
+   - Run the full quality checklist.
    - Verify container styles match: Subscription (orange dashed), RG (blue fill `#DAE8FC`), VNet (white, blue dashed), Subnet (light-blue `#E3F2FD`, grey dashed).
-   - Confirm `<mxfile>` wrapper is present.
-   - Confirm all `mxCell` ids are prefixed with the env slug.
-   - Save output as `Azure_styled_architecture.drawio`.
-   - **Never** open the online Draw.io editor.
+   - Confirm `<mxfile>` wrapper is present and all `mxCell` ids are prefixed with the env slug.
+   - Confirm NSG side-panel tables exist and connector edges are present for every NSG.
+   - Save output as `Azure_styled_architecture.drawio`. **Never** open the online Draw.io editor.
 

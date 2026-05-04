@@ -280,6 +280,95 @@ Repeat for every `azurerm_subnet_network_security_group_association`.
 
 ---
 
+## 6b — NSG Rules Side-Panel (Table + Connector Pattern)
+
+For **every NSG discovered**, emit an HTML rules table positioned to the
+**right of the VNet container** and a **dashed connector** from the NSG
+badge icon to the table. This pattern mirrors `sample_vnet.drawio`.
+
+### Layout rules
+
+- Tables are placed at canvas-absolute coordinates (parent = `"1"`).
+- `x` = VNet right canvas edge + 80 px gap (≈ 1660 for standard layouts).
+- `y` = vertically aligned with the subnet the NSG is associated to.
+- Stack tables top-to-bottom in the same column: bastion → PE → app.
+- NSG with custom rules (e.g. Bastion): height ≈ row_count × 22 + 120 px.
+- NSG with no custom rules: height = 160 px (header + inbound + outbound placeholders).
+- Width = 380 px.
+- Extend `pageWidth` to `pageWidth_original + 440` to accommodate the side panel.
+
+### Table cell style
+```
+text;html=1;strokeColor=#0078D4;fillColor=#FAFAFA;align=left;
+verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;
+rotatable=0;fontSize=10;
+```
+
+### Table HTML structure (embedded in `value=` attribute)
+
+```html
+<table border="1" cellpadding="4" cellspacing="0"
+  style="border-collapse:collapse;font-size:10px;width:100%;">
+  <!-- Header row — NSG name -->
+  <tr style="background:#0078D4;color:white;">
+    <td colspan="6" style="font-weight:bold;padding:6px;">🛡 {nsg_name}</td>
+  </tr>
+  <!-- Inbound section -->
+  <tr style="background:#E3F2FD;">
+    <td colspan="6" style="font-weight:bold;text-align:center;padding:4px;">↓ Inbound Rules</td>
+  </tr>
+  <tr style="background:#f5f5f5;font-weight:bold;">
+    <td>Name</td><td>Priority</td><td>Source</td>
+    <td>Destination</td><td>Port</td><td>Protocol</td>
+  </tr>
+  <!-- One <tr> per inbound rule. Deny rows get style="background:#FFEBEE;" -->
+  <!-- If no custom rules: -->
+  <tr style="color:#888888;">
+    <td colspan="6" style="text-align:center;font-style:italic;">
+      No custom inbound rules (Azure defaults apply)
+    </td>
+  </tr>
+  <!-- Outbound section -->
+  <tr style="background:#FFF3E0;">
+    <td colspan="6" style="font-weight:bold;text-align:center;padding:4px;">↑ Outbound Rules</td>
+  </tr>
+  <tr style="background:#f5f5f5;font-weight:bold;">
+    <td>Name</td><td>Priority</td><td>Source</td>
+    <td>Destination</td><td>Port</td><td>Protocol</td>
+  </tr>
+  <!-- One <tr> per outbound rule. Deny rows get style="background:#FFEBEE;" -->
+</table>
+```
+
+### Connector edge (NSG badge → table)
+
+Use `source` / `target` attribute references so Draw.io routes the edge
+automatically. Set exits from the right of the badge, entry to the left of
+the table:
+
+```xml
+<mxCell id="{env}-nsg-edge-{subnet}" value=""
+  style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;
+  rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;
+  entryX=0;entryY=0.5;entryDx=0;entryDy=0;"
+  edge="1" source="{env}-nsg-{subnet}" target="{env}-nsg-table-{subnet}"
+  parent="1">
+  <mxGeometry relative="1" as="geometry"/>
+</mxCell>
+```
+
+### Standard vertical stack (Shared Services VNet, three subnets)
+
+| Table ID                     | y offset | Height          | Connected to badge     |
+|------------------------------|----------|-----------------|------------------------|
+| `{env}-nsg-table-bastion`    | 120      | 490 (full rules)| `{env}-nsg-bastion`    |
+| `{env}-nsg-table-pe`         | 640      | 160 (no rules)  | `{env}-nsg-pe`         |
+| `{env}-nsg-table-app`        | 820      | 160 (no rules)  | `{env}-nsg-app`        |
+
+Adjust `y` and `height` when more or fewer custom rules exist.
+
+---
+
 ## 7 — Icon Path Reference (Azure2 built-in library)
 
 All icons use `img/lib/azure2/` — built into every Draw.io installation.
@@ -642,7 +731,7 @@ Start at x = 330 and flow left-to-right with 40 px gaps between RGs.
    2. Resolve all interpolations to concrete strings.
    3. Build dependency graph (`.id` refs, `ip_pool_id`, hub connections, NSG associations).
    4. **Detect hub topology**: vWAN variant or classic hub-spoke.
-   5. **Calculate page size** based on resource count.
+   5. **Calculate page size** based on resource count; extend `pageWidth` by 440 px if any NSGs have custom rules (to accommodate side-panel tables).
    6. **Calculate container sizes bottom-up** using the formula.
    7. Emit `<diagram>` block with `name=ENV_NAME`, `id=env-{env_slug}`.
    8. Emit zone backgrounds first (2 rectangles — On-Premises + Azure — lowest z-order).
@@ -651,12 +740,14 @@ Start at x = 330 and flow left-to-right with 40 px gaps between RGs.
       Shared Services RG → VNet → Subnets → Landing Zone RGs/VNets.
    10. Emit NSG badges (parent = VNet, overlapping subnet borders).
    11. Emit other leaf nodes inside parent containers.
-   12. Emit edges last — all with `flowAnimation=1`.
-   13. All mxCell IDs prefixed with `{env_slug}-`.
+   12. Emit **NSG rules side-panel tables** (section 6b) to the right of the VNet container, one table per NSG, stacked vertically — parent = `"1"`, canvas-absolute coordinates. Tables include all inbound and outbound rules parsed from the Terraform NSG module instances.
+   13. Emit **NSG connector edges** (section 6b) — one dashed edge per NSG badge → its rules table, using `source`/`target` attribute references. Style: `endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;`
+   14. Emit all other edges — all with `flowAnimation=1`.
+   15. All mxCell IDs prefixed with `{env_slug}-`.
 
 4. **Assemble output**
    - Wrap all `<diagram>` blocks in single `<mxfile>`.
-   - Save as `enterprise_scale_architecture.drawio`.
+   - Save as `SingleAgent_architecture.drawio`.
 
 5. **Validate** (see section 17).
 
@@ -686,6 +777,13 @@ Before delivering, verify **every** item:
 - [ ] On-Prem → VPN/ER GW edge exists
 - [ ] Every NSG badge: parent = VNet (not subnet), size = 36×36 or 30×30
 - [ ] NSG badges overlap the **top-right** border of associated subnet
+- [ ] Every NSG has a rules table in the side panel (section 6b) — one table per NSG
+- [ ] NSG rules tables are positioned to the **right** of the VNet container (not below the diagram)
+- [ ] Each NSG rules table has a dashed connector edge from the NSG badge icon (source) to the table (target)
+- [ ] NSG connector edges use `exitX=1;exitY=0.5` and `entryX=0;entryY=0.5` (right-to-left connection)
+- [ ] NSG rules tables correctly list all resolved inbound and outbound rules from Terraform
+- [ ] Deny rules rows use `style="background:#FFEBEE;"` (red tint)
+- [ ] `pageWidth` is extended by 440 px when NSG side-panel tables are present
 - [ ] All Azure resources are inside the Azure zone
 - [ ] Single-subscription label shows name only (no subscription ID)
 - [ ] Container icons pinned to top-left corner with label inline to the right
