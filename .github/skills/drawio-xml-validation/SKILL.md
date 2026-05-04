@@ -126,12 +126,14 @@ Before delivering the `.drawio` file, verify **every** item:
 - [ ] Landing zone spoke VNets are placed inside the Landing Zones zone (x ≥ 1520)
 - [ ] Page size matches resource count (A4 for ≤15 · A3 for 16–40 · custom 2400×1200 for 41+)
 - [ ] IP address ranges / CIDRs are included in VNet and subnet labels where architecturally relevant
-- [ ] Output file is saved as `enterprise_scale_architecture.drawio` — **never** opened in the online Draw.io editor
+- [ ] `<mxfile host="GitHub Copilot" version="24.0.0">` wrapper encloses all `<diagram>` blocks — a bare `<mxGraphModel>` root is invalid
+- [ ] **No** connector edges exist between NSG icons and subnets — NSG associations are represented by badge placement only
+- [ ] Output file is saved as `Azure_styled_architecture.drawio` — **never** opened in the online Draw.io editor
 
 ---
 
 ## Save Rule
 
-Output file name: **`enterprise_scale_architecture.drawio`**
+Output file name: **`Azure_styled_architecture.drawio`**
 
 Use `edit/createFile` to write the file to the workspace root. Do not open any online editor.

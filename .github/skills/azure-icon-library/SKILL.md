@@ -12,7 +12,7 @@ All icons use the `img/lib/azure2/` library — built into every Draw.io install
 Apply this style to every leaf resource icon:
 
 ```
-aspect=fixed;html=1;points=[];align=center;image;fontSize=11;
+aspect=fixed;html=1;points=[];align=center;image;fontSize=9;
 image=img/lib/azure2/{CATEGORY}/{ICON}.svg;
 labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;
 fillColor=#ffffff;rounded=1;arcSize=10;shadow=1;
@@ -20,6 +20,8 @@ strokeColor=#e0e0e0;fontColor=#333333;
 ```
 
 Standard icon size: **50 × 50 px**.
+
+> **fontSize must be 9** — using 11 or larger causes label text to overlap adjacent icons inside subnets.
 
 ---
 

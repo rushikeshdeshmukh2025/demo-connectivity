@@ -1,0 +1,61 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.6 Chrome/144.0.7559.236 Electron/40.8.4 Safari/537.36" version="29.6.6">
+  <diagram name="Page-1" id="AKiBI-vEHONhs_gG9TB4">
+    <mxGraphModel dx="1554" dy="922" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="gpBUBAPWhxP8bowRXZv5-12" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=light-dark(#d0e1fb, #ededed);" value="" vertex="1">
+          <mxGeometry height="610" width="600" x="160" y="270" as="geometry" />
+        </mxCell>
+        <mxCell id="gpBUBAPWhxP8bowRXZv5-11" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;dashed=1;dashPattern=8 8;rounded=1;strokeColor=light-dark(#148cc8, #ededed);" value="" vertex="1">
+          <mxGeometry height="510" width="510" x="220" y="310" as="geometry" />
+        </mxCell>
+        <mxCell id="gpBUBAPWhxP8bowRXZv5-3" parent="1" style="rounded=1;arcSize=3;fillColor=#E3F2FD;strokeColor=#808080;dashed=1;dashPattern=3 3;strokeWidth=1;container=1;collapsible=0;recursiveResize=0;html=1;whiteSpace=wrap;verticalAlign=top;fontSize=10;fontColor=#424242;spacingTop=5;spacingLeft=8;" value="AzureBastionSubnet&#xa;10.0.2.0/27" vertex="1">
+          <mxGeometry height="130" width="420" x="240" y="370" as="geometry" />
+        </mxCell>
+        <mxCell id="gpBUBAPWhxP8bowRXZv5-4" parent="gpBUBAPWhxP8bowRXZv5-3" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=9;image=img/lib/azure2/networking/Bastions.svg;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#ffffff;rounded=1;arcSize=10;shadow=1;strokeColor=#e0e0e0;fontColor=#333333;" value="bas_rus_dev_connectivity_gwc" vertex="1">
+          <mxGeometry height="50" width="50" x="85" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="gpBUBAPWhxP8bowRXZv5-5" parent="gpBUBAPWhxP8bowRXZv5-3" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=9;image=img/lib/azure2/networking/Public_IP_Addresses.svg;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#ffffff;rounded=1;arcSize=10;shadow=1;strokeColor=#e0e0e0;fontColor=#333333;" value="pip_bas_rus_dev_connectivity_gwc" vertex="1">
+          <mxGeometry height="50" width="50" x="205" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="gpBUBAPWhxP8bowRXZv5-8" parent="gpBUBAPWhxP8bowRXZv5-3" style="image;aspect=fixed;html=1;points=[];align=center;imageAlign=center;imageVerticalAlign=middle;verticalAlign=bottom;verticalLabelPosition=bottom;labelPosition=center;rounded=1;fontSize=8;fontColor=#333333;shadow=0;strokeColor=none;fillColor=none;image=img/lib/azure2/networking/Network_Security_Groups.svg;" value="nsg_rus_dev_bastion_gwc" vertex="1">
+          <mxGeometry height="36" width="36" x="375" y="-20" as="geometry" />
+        </mxCell>
+        <mxCell id="gpBUBAPWhxP8bowRXZv5-6" parent="1" style="rounded=1;arcSize=3;fillColor=#E3F2FD;strokeColor=#808080;dashed=1;dashPattern=3 3;strokeWidth=1;container=1;collapsible=0;recursiveResize=0;html=1;whiteSpace=wrap;verticalAlign=top;fontSize=10;fontColor=#424242;spacingTop=5;spacingLeft=8;" value="snet_rus_dev_private_endpoint_gwc&#xa;10.0.2.32/27" vertex="1">
+          <mxGeometry height="120" width="420" x="240" y="520" as="geometry" />
+        </mxCell>
+        <mxCell id="gpBUBAPWhxP8bowRXZv5-9" parent="gpBUBAPWhxP8bowRXZv5-6" style="image;aspect=fixed;html=1;points=[];align=center;imageAlign=center;imageVerticalAlign=middle;verticalAlign=bottom;verticalLabelPosition=bottom;labelPosition=center;rounded=1;fontSize=8;fontColor=#333333;shadow=0;strokeColor=none;fillColor=none;image=img/lib/azure2/networking/Network_Security_Groups.svg;" value="nsg_rus_dev_private_endpoint_gwc" vertex="1">
+          <mxGeometry height="36" width="36" x="384" y="-20" as="geometry" />
+        </mxCell>
+        <mxCell id="gpBUBAPWhxP8bowRXZv5-18" parent="gpBUBAPWhxP8bowRXZv5-6" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/networking/Subnet.svg;" value="" vertex="1">
+          <mxGeometry height="40.72" width="68" y="-20" as="geometry" />
+        </mxCell>
+        <mxCell id="gpBUBAPWhxP8bowRXZv5-7" parent="1" style="rounded=1;arcSize=3;fillColor=#E3F2FD;strokeColor=#808080;dashed=1;dashPattern=3 3;strokeWidth=1;container=1;collapsible=0;recursiveResize=0;html=1;whiteSpace=wrap;verticalAlign=top;fontSize=10;fontColor=#424242;spacingTop=5;spacingLeft=8;" value="snet_rus_dev_app_gwc&#xa;10.0.2.64/27" vertex="1">
+          <mxGeometry height="120" width="430" x="245" y="660" as="geometry" />
+        </mxCell>
+        <mxCell id="gpBUBAPWhxP8bowRXZv5-10" parent="gpBUBAPWhxP8bowRXZv5-7" style="image;aspect=fixed;html=1;points=[];align=center;imageAlign=center;imageVerticalAlign=middle;verticalAlign=bottom;verticalLabelPosition=bottom;labelPosition=center;rounded=1;fontSize=8;fontColor=#333333;shadow=0;strokeColor=none;fillColor=none;image=img/lib/azure2/networking/Network_Security_Groups.svg;" value="nsg_rus_dev_app_gwc" vertex="1">
+          <mxGeometry height="36" width="36" x="394" y="-16" as="geometry" />
+        </mxCell>
+        <mxCell id="gpBUBAPWhxP8bowRXZv5-19" parent="gpBUBAPWhxP8bowRXZv5-7" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/networking/Subnet.svg;" value="" vertex="1">
+          <mxGeometry height="40.72" width="68" y="-16" as="geometry" />
+        </mxCell>
+        <mxCell id="gpBUBAPWhxP8bowRXZv5-13" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;span style=&quot;color: rgb(26, 35, 126); font-weight: 700;&quot;&gt;rg_rus_dev_shd_svc_gwc&lt;/span&gt;&lt;br style=&quot;color: rgb(26, 35, 126); font-weight: 700;&quot;&gt;&lt;span style=&quot;color: rgb(26, 35, 126); font-weight: 700;&quot;&gt;Germany West Central&lt;/span&gt;" vertex="1">
+          <mxGeometry height="30" width="190" x="355" y="850" as="geometry" />
+        </mxCell>
+        <mxCell id="gpBUBAPWhxP8bowRXZv5-14" parent="1" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/general/Resource_Groups.svg;" value="" vertex="1">
+          <mxGeometry height="64" width="68" x="172" y="830" as="geometry" />
+        </mxCell>
+        <mxCell id="gpBUBAPWhxP8bowRXZv5-15" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;span style=&quot;color: rgb(26, 35, 126); font-weight: 700;&quot;&gt;vnet_rus_dev_shared_services_gwc&lt;/span&gt;&lt;br style=&quot;color: rgb(26, 35, 126); font-weight: 700;&quot;&gt;&lt;span style=&quot;color: rgb(26, 35, 126); font-weight: 700;&quot;&gt;10.0.2.0/23&lt;/span&gt;" vertex="1">
+          <mxGeometry height="30" width="190" x="420" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="gpBUBAPWhxP8bowRXZv5-16" parent="1" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/networking/Virtual_Networks.svg;" value="" vertex="1">
+          <mxGeometry height="40" width="67" x="260" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="gpBUBAPWhxP8bowRXZv5-17" parent="1" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/networking/Subnet.svg;" value="" vertex="1">
+          <mxGeometry height="40.72" width="68" x="240" y="350" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
