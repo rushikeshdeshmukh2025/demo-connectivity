@@ -15,7 +15,7 @@ tools:
 
 This agent generates an Azure CAF-style `.drawio` diagram using **`terraform graph`** DOT output as the primary dependency source. It avoids reading every `.tf` file — instead extracting the full resource graph from Terraform's own planner, then reading only `locals.tf`, `variables.tf`, `environments/*.tfvars`, and NSG rule blocks for labelling.
 
-**Token savings:** ~60–80% fewer input tokens vs the full file-parsing agent.
+
 
 ---
 
@@ -24,15 +24,18 @@ This agent generates an Azure CAF-style `.drawio` diagram using **`terraform gra
 ```
 Subscription
  └── Resource Group (RG)
-      ├── vWAN container
+      ├── vWAN container          ← Connectivity RG (vWAN topology)
       │    └── vHub container
       │         ├── Azure Firewall
       │         ├── Firewall Policy
       │         └── VPN / ER Gateway
-      ├── VNet container
+      ├── Hub VNet container      ← Connectivity RG (classic hub-spoke)
+      │    └── Subnet containers
+      │         └── Firewall, Gateway, Bastion …
+      ├── VNet container          ← Shared Services / Landing Zone RGs
       │    └── Subnet container
-      │         └── Leaf nodes (Bastion, PIP, PE, VM …)
-      └── Standalone resources (IP Pool, Budget …)
+      │         └── Leaf nodes (Bastion, PIP, PE, VM, AKS …)
+      └── Standalone resources    ← IP Pool, Budget, Managed Identity …
 ```
 
 Child cells are **always positioned relative to their parent** — never canvas-absolute.
@@ -82,17 +85,30 @@ Build a map:
 | Graph contains `azurerm_virtual_wan` + `azurerm_virtual_hub` | **vWAN** |
 | Graph contains `azurerm_virtual_network` + `azurerm_virtual_network_peering` (no vWAN) | **Classic hub-spoke** |
 
-### Step 4 — Read minimal Terraform files for labels
+### Step 4 — Read Terraform files for labels and placement context
 
-Read ONLY these files (3–5 files total, not the full repo):
+Read these files to resolve names, placement, and resource details:
+
 1. `locals.tf` — extract `name_prefix`, `name_suffix`
 2. `variables.tf` — get defaults for labelling
 3. Each `environments/*.tfvars` — merge with defaults for per-env resolution
-4. NSG module `variables.tf` and the root NSG invocation — extract `security_rules`
+4. **All root `.tf` files** that instantiate modules — scan for `module "..."` blocks to determine:
+   - Which `resource_group_name` each module targets (→ RG container placement)
+   - Which `subnet_id` each module uses (→ subnet container placement)
+   - Which sub-resource references exist (e.g. `private_dns_zone_ids`, `private_connection_resource_id`)
+5. NSG module `variables.tf` and the root NSG invocation — extract `security_rules`
 
-### Step 5 — Classify resources into containers
+**Why root `.tf` files matter:** The DOT graph shows dependency edges but does NOT encode which RG or subnet a resource lives in. The `resource_group_name` and `subnet_id` arguments in root module blocks provide that placement context. Without them, new modules (storage accounts, key vaults, private endpoints, DNS zones) cannot be classified into the correct container.
 
-Using the module path from the graph, map resources to their parent container:
+**Efficiency tip:** You do NOT need to read module internals — only the root-level `module` blocks that pass `resource_group_name`, `subnet_id`, and naming arguments.
+
+### Step 5 — Classify resources into containers (dynamic)
+
+Classification uses **two passes**:
+
+#### Pass 1 — Known module patterns (fast path)
+
+These well-known modules have fixed placement:
 
 | Module path pattern | Container |
 |---------------------|-----------|
@@ -107,13 +123,40 @@ Using the module path from the graph, map resources to their parent container:
 | `module.network_security_group.*` | NSG badge on VNet |
 | `module.*_peering.*` or `module.*virtual_hub_connection.*` | Edge (hub↔spoke) |
 
+#### Pass 2 — Dynamic classification (for any module NOT in Pass 1)
+
+For modules not matched above, determine placement by inspecting their root `module` block arguments (read in Step 4):
+
+| Argument found | Placement rule |
+|----------------|----------------|
+| `subnet_id = module.<vnet_module>.subnet_ids["<key>"]` | Place inside that subnet container |
+| `resource_group_name = azurerm_resource_group.<rg>.name` | Place as direct child of that RG |
+| `virtual_network_id = module.<vnet_module>.id` | Place inside that VNet container (not a subnet) |
+| `private_connection_resource_id = module.<X>.id` | Place in same subnet as the PE (private endpoint pattern) |
+| None of the above | Place as standalone child of the Subscription |
+
+**Examples of dynamic classification:**
+
+| Module | Detected argument | Resulting placement |
+|--------|-------------------|--------------------|
+| `module.storage_account` | `resource_group_name = azurerm_resource_group.shared_services.name` | Inside Shared Services RG (standalone) |
+| `module.key_vault` | `resource_group_name = azurerm_resource_group.shared_services.name` | Inside Shared Services RG (standalone) |
+| `module.private_endpoints["storage_blob"]` | `subnet_id = module.shared_services_vnet.subnet_ids["private_endpoint"]` | Inside private_endpoint subnet |
+| `module.private_endpoints["key_vault"]` | `subnet_id = module.shared_services_vnet.subnet_ids["private_endpoint"]` | Inside private_endpoint subnet |
+| `module.private_dns_zones["blob"]` | `resource_group_name = azurerm_resource_group.shared_services.name` | Inside Shared Services RG (standalone) |
+| `module.private_dns_zones["vault"]` | `resource_group_name = azurerm_resource_group.shared_services.name` | Inside Shared Services RG (standalone) |
+
+#### `for_each` modules
+
+When a module uses `for_each`, each instance (e.g. `module.private_endpoints["storage_blob"]`) is a separate node in the DOT graph. Classify each instance independently using the same rules. If all instances share the same `subnet_id` / `resource_group_name`, they all go in the same container.
+
 ### Step 6 — Build Draw.io XML
 
 Follow sections 2–8 below for XML generation rules.
 
 ### Step 7 — Save
 
-Save as `Azure_styled_architecture.drawio`.
+Save as `terraform_graph_architecture.drawio`.
 
 ---
 
@@ -332,6 +375,8 @@ Size: **78 × 78 px**. Label: `On-Premises / Branch`.
 | `azurerm_user_assigned_identity` | `identity/Managed_Identities.svg` |
 | `azurerm_log_analytics_workspace` | `management_governance/Log_Analytics_Workspaces.svg` |
 | `azurerm_application_security_group` | `security/Application_Security_Groups.svg` |
+| `azurerm_private_dns_zone` | `networking/DNS_Zones.svg` |
+| `azurerm_private_dns_zone_virtual_network_link` | `networking/DNS_Zones.svg` |
 
 Unmapped resources use:
 ```
@@ -524,6 +569,8 @@ name_suffix = region_short                         # e.g. "gwc"
 Before delivery, verify ALL:
 
 - [ ] `terraform graph` was run and `.terraform-graph.dot` was parsed
+- [ ] **All root `.tf` module blocks** were read for `resource_group_name` / `subnet_id` placement context
+- [ ] Dynamic classification (Pass 2) was applied to any module not in the known-pattern table
 - [ ] Every `<mxCell>` has `html=1`
 - [ ] Children positioned relative to parent (not canvas)
 - [ ] All coordinates multiples of 10
@@ -550,16 +597,3 @@ Before delivery, verify ALL:
 - [ ] `<mxfile>` wrapper present
 - [ ] File saved as `terraform_graph_architecture.drawio`
 - [ ] `.terraform-graph.dot` cleaned up after diagram generation
-
----
-
-## 14 — Token Efficiency Notes
-
-This agent reads at most **5–8 files** total:
-1. `.terraform-graph.dot` (generated, ~50–200 lines)
-2. `locals.tf` (~20 lines)
-3. `variables.tf` (~60 lines)
-4. Each `environments/*.tfvars` (~15 lines each)
-5. NSG module `variables.tf` or root NSG block (for security_rules)
-
-Compare to the full-parser agent which reads 20–40+ files. The DOT graph provides the complete dependency structure that would otherwise require parsing all module files.

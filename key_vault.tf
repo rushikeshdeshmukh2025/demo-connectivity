@@ -5,7 +5,7 @@ module "key_vault" {
 
   # Key vault names must be 3–24 alphanumeric characters and hyphens
   name                       = "kv-${replace(local.name_prefix, "_", "-")}-shd-${local.name_suffix}"
-  resource_group_name        = azurerm_resource_group.shared_services.name
+  resource_group_name        = azurerm_resource_group.key_vault.name
   location                   = var.location
   tenant_id                  = data.azurerm_client_config.current.tenant_id
   sku_name                   = "standard"
