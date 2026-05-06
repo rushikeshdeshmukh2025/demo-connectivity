@@ -5,15 +5,6 @@
       "command": "npx",
       "args": ["-y", "@azure/mcp@latest", "server", "start"]
     },
-    "terraform": {
-      "type": "stdio",
-      "command": "terraform-mcp-server",
-      "args": ["-transport", "stdio"],
-      "env": {
-        "TFE_TOKEN": "${input:tfe_token}",
-        "TFE_ADDRESS": "${input:tfe_address}"
-      }
-    },
     "drawio": {
       "type": "stdio",
       "command": "npx",

@@ -196,8 +196,9 @@ shape=swimlane;html=1;horizontal=1;startSize=40;rounded=1;shadow=0;
 fillColor=#f3f8fb;strokeColor=#0078d4;fontColor=#0078d4;fontSize=11;
 fontStyle=1;collapsible=1;isContainer=1;
 image=img/lib/azure2/networking/Virtual_WANs.svg;
-imageAlign=left;imageWidth=20;imageHeight=20;spacingLeft=28;
+imageAlign=left;imageWidth=36;imageHeight=36;spacingLeft=48;
 ```
+> Icon is **36×36 px** (larger than RG's 20×20) so the vWAN/vHub swimlane header is as visually prominent as a Resource Group container.
 
 ### 5.4 vHub container (inside vWAN)
 ```
@@ -205,8 +206,9 @@ shape=swimlane;html=1;horizontal=1;startSize=40;rounded=1;shadow=0;
 fillColor=#f3f8fb;strokeColor=#0078d4;fontColor=#0078d4;fontSize=11;
 fontStyle=1;collapsible=1;isContainer=1;
 image=img/lib/azure2/networking/Virtual_WAN_Hub.svg;
-imageAlign=left;imageWidth=20;imageHeight=20;spacingLeft=28;
+imageAlign=left;imageWidth=36;imageHeight=36;spacingLeft=48;
 ```
+> Same 36×36 icon rule applies. `spacingLeft=48` prevents the title text from overlapping the larger icon.
 
 ### 5.5 Virtual Network
 ```
@@ -280,24 +282,38 @@ Repeat for every `azurerm_subnet_network_security_group_association`.
 
 ---
 
-## 6b — NSG Rules Side-Panel (Table + Connector Pattern)
+## 6b — NSG Rules Side-Panel (Outer Container + Per-NSG Tables)
 
-For **every NSG discovered**, emit an HTML rules table positioned to the
-**right of the VNet container** and a **dashed connector** from the NSG
-badge icon to the table. This pattern mirrors `sample_vnet.drawio`.
+All per-NSG rules tables are grouped inside a **single outer "NSG Rules" container** placed to the right of the VNet. Each NSG gets its own HTML table cell as a **child** of this outer container. Dashed connectors run from each NSG badge (on the VNet) to its corresponding inner table cell.
 
-### Layout rules
+### Outer "NSG Rules" container
 
-- Tables are placed at canvas-absolute coordinates (parent = `"1"`).
-- `x` = VNet right canvas edge + 80 px gap (≈ 1660 for standard layouts).
-- `y` = vertically aligned with the subnet the NSG is associated to.
-- Stack tables top-to-bottom in the same column: bastion → PE → app.
-- NSG with custom rules (e.g. Bastion): height ≈ row_count × 22 + 120 px.
-- NSG with no custom rules: height = 160 px (header + inbound + outbound placeholders).
-- Width = 380 px.
-- Extend `pageWidth` to `pageWidth_original + 440` to accommodate the side panel.
+Emit **one** outer container per diagram tab:
 
-### Table cell style
+- **Cell ID**: `{env}-nsg-panel`
+- **Parent**: `"1"` (canvas-absolute).
+- **Position**: `x` = VNet right canvas edge + 80 px (≈ 1660 for standard layouts). `y` = 80.
+- **Width**: 400 px. **Height** = startSize (36) + sum of inner table heights + (N−1) × 10 px gap + 20 px bottom padding.
+- **Label**: `NSG Rules`
+- **Style** (titled swimlane with blue header):
+
+```
+shape=swimlane;html=1;horizontal=1;startSize=36;rounded=1;shadow=0;
+fillColor=#E8F0FE;strokeColor=#0078D4;strokeWidth=2;fontColor=#0078D4;
+fontSize=12;fontStyle=1;collapsible=0;isContainer=1;
+```
+
+### Inner per-NSG table cells
+
+Each table is a child of the outer container (`parent="{env}-nsg-panel"`), positioned **relatively**:
+
+- `x` = 10, `width` = 380.
+- `y` of first table = 46 (after `startSize=36` header + 10 px gap).
+- Each subsequent table: `y` = previous_y + previous_height + 10.
+- NSG with custom rules: `height` ≈ row_count × 22 + 120 px.
+- NSG with no custom rules: `height` = 160 px.
+
+#### Table cell style
 ```
 text;html=1;strokeColor=#0078D4;fillColor=#FAFAFA;align=left;
 verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;
@@ -340,11 +356,9 @@ rotatable=0;fontSize=10;
 </table>
 ```
 
-### Connector edge (NSG badge → table)
+### Connector edge (NSG badge → inner table cell)
 
-Use `source` / `target` attribute references so Draw.io routes the edge
-automatically. Set exits from the right of the badge, entry to the left of
-the table:
+`source` = the NSG badge cell (parented to the VNet); `target` = the inner table cell inside `{env}-nsg-panel`. Edge `parent="1"` so it can cross container boundaries.
 
 ```xml
 <mxCell id="{env}-nsg-edge-{subnet}" value=""
@@ -357,17 +371,76 @@ the table:
 </mxCell>
 ```
 
-### Standard vertical stack (Shared Services VNet, three subnets)
+### Standard vertical stack example (Shared Services VNet, three subnets)
 
-| Table ID                     | y offset | Height          | Connected to badge     |
-|------------------------------|----------|-----------------|------------------------|
-| `{env}-nsg-table-bastion`    | 120      | 490 (full rules)| `{env}-nsg-bastion`    |
-| `{env}-nsg-table-pe`         | 640      | 160 (no rules)  | `{env}-nsg-pe`         |
-| `{env}-nsg-table-app`        | 820      | 160 (no rules)  | `{env}-nsg-app`        |
+All `y` values are **relative to the outer `{env}-nsg-panel` container**:
 
-Adjust `y` and `height` when more or fewer custom rules exist.
+| Table ID                      | rel-y | Height           | Connected badge      |
+|-------------------------------|-------|------------------|----------------------|
+| `{env}-nsg-table-bastion`     | 46    | 490 (full rules) | `{env}-nsg-bastion`  |
+| `{env}-nsg-table-pe`          | 546   | 160 (no rules)   | `{env}-nsg-pe`       |
+| `{env}-nsg-table-app`         | 716   | 160 (no rules)   | `{env}-nsg-app`      |
+
+Outer panel height = 36 + 490 + 10 + 160 + 10 + 160 + 20 = **886 px**.
+
+Adjust `y` and `height` when more or fewer custom rules exist. Always extend `pageWidth` by **440 px**.
 
 ---
+
+## 6c — Connections Legend Table
+
+Emit a **legend table** on every diagram tab explaining the edge styles used in that diagram.
+
+### Placement
+- **Parent**: `"1"` (canvas-absolute).
+- **Cell ID**: `{env}-legend`
+- **Position**: `x` = 10, `y` = On-Premises zone height − legend height − 20 (typically `y ≈ 900` for a 1169 px page).
+- **Width**: 280 px.
+
+### Legend cell style
+```
+text;html=1;strokeColor=#0078D4;fillColor=#FAFAFA;rounded=1;arcSize=5;
+align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;
+overflow=hidden;rotatable=0;fontSize=9;
+```
+
+### Legend HTML value
+
+```html
+<table border="1" cellpadding="4" cellspacing="0"
+  style="border-collapse:collapse;font-size:9px;width:100%;">
+  <tr style="background:#0078D4;color:white;">
+    <td colspan="2" style="font-weight:bold;padding:6px;text-align:center;">Connection Legend</td>
+  </tr>
+  <tr style="background:#f5f5f5;font-weight:bold;">
+    <td style="width:55%;">Line Style</td><td>Meaning</td>
+  </tr>
+  <tr>
+    <td style="color:#8d6e32;font-weight:bold;">- - → (brown dashed)</td>
+    <td>VPN Tunnel (On-Prem ↔ VPN GW)</td>
+  </tr>
+  <tr>
+    <td style="color:#0078D4;font-weight:bold;">◀──▶ (blue bidir, thick)</td>
+    <td>vHub Connection / VNet Peering</td>
+  </tr>
+  <tr>
+    <td style="color:#0078D4;">──▶ (solid blue)</td>
+    <td>Property ref (e.g. firewall_policy_id)</td>
+  </tr>
+  <tr>
+    <td style="color:#999999;">· · → (grey dotted)</td>
+    <td>Module param (e.g. ip_pool_id)</td>
+  </tr>
+  <tr>
+    <td style="color:#0078D4;">- - (thin dashed blue)</td>
+    <td>NSG association (badge → rules table)</td>
+  </tr>
+</table>
+```
+
+---
+
+
 
 ## 7 — Icon Path Reference (Azure2 built-in library)
 
@@ -529,7 +602,7 @@ When `azurerm_virtual_wan` / `azurerm_virtual_hub` resources exist:
 
 - Use vWAN → vHub nested containers (sections 5.3, 5.4).
 - Firewall, Firewall Policy, VPN/ER Gateway are leaf nodes inside vHub.
-- Spoke VNets connect via `azurerm_virtual_hub_connection` edges.
+- Spoke VNets connect via `azurerm_virtual_hub_connection` edges. Label: **`vHub Connection [internet_security=true]`** when `internet_security_enabled = true`, otherwise `vHub Connection`. This resource is the vWAN equivalent of `azurerm_virtual_network_peering` — always emit this edge when the resource exists. Do NOT omit it.
 
 ### 10.2 Classic hub VNet
 
@@ -710,7 +783,7 @@ Start at x = 330 and flow left-to-right with 40 px gaps between RGs.
 | IP Pool           | vHub                | `ip_pool_id`                             | Module parameter  |
 | IP Pool           | VNet                | `ip_pool_id`                             | Module parameter  |
 | Firewall Policy   | Firewall            | `firewall_policy_id`                     | .id ref           |
-| vHub              | Spoke VNet          | `hub connection&#xa;internet_security`   | Hub ↔ Spoke       |
+| vHub              | Spoke VNet          | `vHub Connection [internet_security=true]` | Hub ↔ Spoke (azurerm_virtual_hub_connection — emit whenever this resource exists) |
 | Bastion           | Public IP           | *(empty)*                                | .id ref           |
 
 ---
@@ -740,7 +813,8 @@ Start at x = 330 and flow left-to-right with 40 px gaps between RGs.
       Shared Services RG → VNet → Subnets → Landing Zone RGs/VNets.
    10. Emit NSG badges (parent = VNet, overlapping subnet borders).
    11. Emit other leaf nodes inside parent containers.
-   12. Emit **NSG rules side-panel tables** (section 6b) to the right of the VNet container, one table per NSG, stacked vertically — parent = `"1"`, canvas-absolute coordinates. Tables include all inbound and outbound rules parsed from the Terraform NSG module instances.
+   12. Emit **outer NSG Rules container** (section 6b) — a titled swimlane (`id="{env}-nsg-panel"`, `parent="1"`) at canvas-right of the VNet. Inside it, emit one HTML table cell per NSG as a child (`parent="{env}-nsg-panel"`, relative coordinates). Parse all `security_rules` blocks; render inbound → outbound rows; deny rows use `background:#FFEBEE`. NSGs with no custom rules show an italic placeholder row.
+   12b. Emit **Connections Legend table** (section 6c) — id `{env}-legend`, parent `"1"`, at bottom-left of On-Premises zone (x=10, y≈900).
    13. Emit **NSG connector edges** (section 6b) — one dashed edge per NSG badge → its rules table, using `source`/`target` attribute references. Style: `endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;`
    14. Emit all other edges — all with `flowAnimation=1`.
    15. All mxCell IDs prefixed with `{env_slug}-`.
@@ -784,6 +858,11 @@ Before delivering, verify **every** item:
 - [ ] NSG rules tables correctly list all resolved inbound and outbound rules from Terraform
 - [ ] Deny rules rows use `style="background:#FFEBEE;"` (red tint)
 - [ ] `pageWidth` is extended by 440 px when NSG side-panel tables are present
+- [ ] **All NSG tables are children of the outer `{env}-nsg-panel` swimlane container** (not canvas-absolute)
+- [ ] Outer NSG panel uses `shape=swimlane;startSize=36;fillColor=#E8F0FE;strokeColor=#0078D4;strokeWidth=2` with label `NSG Rules`
+- [ ] Connections Legend table (`{env}-legend`) exists in every tab at bottom-left of On-Premises zone (x=10, y≈900)
+- [ ] vHub ↔ Spoke edges labelled `vHub Connection [internet_security=true]` — not "hub connection"
+- [ ] vWAN and vHub swimlane icons use `imageWidth=36;imageHeight=36;spacingLeft=48`
 - [ ] All Azure resources are inside the Azure zone
 - [ ] Single-subscription label shows name only (no subscription ID)
 - [ ] Container icons pinned to top-left corner with label inline to the right
