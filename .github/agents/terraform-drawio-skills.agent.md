@@ -1,5 +1,5 @@
 ---
-name: terraform-drawio-caf-skills
+name: terraform-drawio-skills
 description: "Generate or update a Draw.io Azure CAF architecture diagram from Terraform. Uses `terraform graph` for dependency detection and delegates rendering to modular skills. Supports incremental updates to existing diagrams. USE WHEN: terraform to drawio, architecture diagram, update diagram, visualize terraform, CAF diagram, landing zone diagram."
 tools:
   - search/codebase
@@ -160,6 +160,15 @@ Use `edit/createFile` with these **exact parameters**:
 - `file_text`: the complete XML string (the entire `<mxfile>...</mxfile>` content)
 
 Both parameters are **required**. Do not omit `file_text`.
+
+**CRITICAL — Large file handling (multi-environment):**
+When multiple environment tabs make the XML exceed ~10,000 characters, split into sequential operations:
+1. **First call:** `edit/createFile` with the first `<diagram>` tab wrapped in `<mxfile>...</mxfile>`
+2. **Subsequent calls:** Use `edit/editFiles` to insert each additional `<diagram>...</diagram>` block immediately before the closing `</mxfile>` tag
+3. Each `edit/editFiles` call must include the full `<diagram>...</diagram>` block being inserted
+4. After all tabs are inserted, verify the file still ends with `</mxfile>`
+
+**Single environment (≤10,000 chars):** Write the entire file in one `edit/createFile` call.
 
 After saving, clean up:
 ```powershell
