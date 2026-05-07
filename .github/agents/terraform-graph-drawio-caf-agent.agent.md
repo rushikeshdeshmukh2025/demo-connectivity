@@ -194,8 +194,6 @@ Save as `terraform_graph_architecture.drawio`.
 | 16–40 | A3 landscape | 1654 | 1169 |
 | 40+ | Custom wide | 2400 | 1200 |
 
-Extend `pageWidth` by **820 px** when NSG rules tables are present (two-column layout).
-
 ---
 
 ## 3 — Container Sizing (bottom-up formula)
@@ -413,8 +411,11 @@ NSG rules tables are placed **outside the Azure zone box** (to its right) as leg
 - Table height: NSG with rules = `row_count × 22 + 120` px; no custom rules = 160 px.
 - Extend `pageWidth` by **820 px** (two columns × 400 + gaps).
 
-**Explicitly forbidden:**
+**Forbidden:**
 - Do NOT place NSG tables inside the Azure zone box.
+- Do NOT emit any connector edge between NSG badges and NSG tables.
+- Do NOT use an outer swimlane container (`{env}-nsg-panel` is NOT needed).
+- Each table is an independent cell with `parent="1"`.
 
 **Table cell style:**
 ```
@@ -422,11 +423,6 @@ text;html=1;strokeColor=#0078D4;fillColor=#FAFAFA;align=left;
 verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;
 rotatable=0;fontSize=10;rounded=1;arcSize=5;
 ```
-
-**Also explicitly forbidden:**
-- Do NOT emit any connector edge between NSG badges and NSG tables.
-- Do NOT use an outer swimlane container (`{env}-nsg-panel` is NOT needed).
-- Each table is an independent cell with `parent="1"`.
 
 ### NSG Table HTML
 
@@ -546,7 +542,7 @@ name_suffix = region_short                         # e.g. "gwc"
 
 ### On-Premises zone (x = 10–290)
 
-**Y-alignment**: The On-Premises container Y must be calculated so that its interior icon's vertical centre equals the VPN Gateway icon's canvas-absolute vertical centre. Use: `onprem_y = vpngw_canvas_centre_y − (onprem_h / 2)`. Do NOT hardcode Y — always derive from VPN Gateway position.
+Y-alignment: derive from VPN Gateway position (see Section 8 horizontal alignment rule).
 
 | Element | x | y | w | h |
 |---------|---|---|---|---|
@@ -569,31 +565,18 @@ name_suffix = region_short                         # e.g. "gwc"
 Before delivery, verify ALL:
 
 - [ ] `terraform graph` was run and `.terraform-graph.dot` was parsed
-- [ ] **All root `.tf` module blocks** were read for `resource_group_name` / `subnet_id` placement context
-- [ ] Dynamic classification (Pass 2) was applied to any module not in the known-pattern table
+- [ ] All root `.tf` module blocks read for placement context (Step 4)
+- [ ] Dynamic classification applied (Step 5, Pass 2)
 - [ ] Every `<mxCell>` has `html=1`
-- [ ] Children positioned relative to parent (not canvas)
-- [ ] All coordinates multiples of 10
+- [ ] Children positioned relative to parent; all coordinates multiples of 10
 - [ ] No overlapping shapes at same level
-- [ ] Container hierarchy: Subscription → RG → vWAN → vHub → VNet → Subnet → leaf
-- [ ] Connectors use `source` and `target` attributes
-- [ ] `flowAnimation=1` on ALL edges
-- [ ] Icon sizes: 50×50 (leaf), 78×78 (On-Premises building)
-- [ ] On-Premises node uses `shape=mxgraph.aws4.illustration_office_building`
-- [ ] On-Prem → VPN GW edge uses `edgeStyle=none` (straight line)
-- [ ] On-Premises icon and VPN GW icon share the same canvas-absolute Y centre (horizontal alignment)
-- [ ] RG containers include `imageVerticalAlign=top`
-- [ ] vWAN/vHub swimlane icons: `imageWidth=20;imageHeight=20;spacingLeft=28` (same size as RG)
-- [ ] VNet container icon: `imageWidth=36;imageHeight=36` (larger, constrained proportions)
-- [ ] NSG badges: parent = VNet, x = right border (`subnet_x + subnet_width − 18`)
-- [ ] NSG rules tables placed canvas-absolute (`parent="1"`) outside Azure zone box (to its right) in two-column layout
-- [ ] NO connector edges between NSG badges and NSG rules tables
-- [ ] No `{env}-nsg-panel` outer container — tables are independent cells
-- [ ] `pageWidth` extended by 820 px when NSG tables present (two-column layout)
-- [ ] Exactly 2 zone backgrounds exist (On-Premises + single Azure box) — no sub-zone backgrounds
-- [ ] Azure zone uses connectivity-like blue styling (`fillColor=#e8f0fe;strokeColor=#0078D4;strokeWidth=2`)
-- [ ] vHub ↔ Spoke edges labelled `vHub Connection [internet_security=true]`
-- [ ] Connections Legend table exists (`{env}-legend`) and is placed below (outside) the On-Premises zone box
+- [ ] Container hierarchy respected (Section 0)
+- [ ] Connectors use `source`/`target`; `flowAnimation=1` on ALL edges
+- [ ] Icon sizes per Section 6 (50×50 leaf, 78×78 On-Prem)
+- [ ] On-Prem → VPN GW: `edgeStyle=none`, horizontal Y-aligned (Section 8)
+- [ ] Styles match Section 5 (RG, vWAN/vHub, VNet, Subnet)
+- [ ] NSG badges and tables per Section 7 rules
+- [ ] Exactly 2 zone backgrounds (Section 4)
+- [ ] Connections Legend below On-Premises zone (Section 9)
 - [ ] `<mxfile>` wrapper present
-- [ ] File saved as `terraform_graph_architecture.drawio`
 - [ ] `.terraform-graph.dot` cleaned up after diagram generation

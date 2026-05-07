@@ -141,6 +141,35 @@ Standard icon size: **50 × 50 px**.
 | `azurerm_iothub` | `iot/IoT_Hub.svg` |
 | `azurerm_iothub_dps` | `iot/Device_Provisioning_Services.svg` |
 
+### Virtual Desktop (AVD)
+
+| Terraform resource type | `image=img/lib/azure2/…` |
+|-------------------------|--------------------------|
+| `azurerm_virtual_desktop_host_pool` | `compute/AVD_Host_Pool.svg` |
+| `azurerm_virtual_desktop_workspace` | `compute/Workspaces.svg` |
+| `azurerm_virtual_desktop_application_group` | `compute/Workspaces.svg` |
+| `azurerm_virtual_desktop_scaling_plan` | `compute/Workspaces.svg` |
+
+### Data Platform
+
+| Terraform resource type | `image=img/lib/azure2/…` |
+|-------------------------|--------------------------|
+| `azurerm_synapse_workspace` | `databases/Azure_Synapse_Analytics.svg` |
+| `azurerm_synapse_sql_pool` | `databases/SQL_Database.svg` |
+| `azurerm_synapse_spark_pool` | `databases/Azure_Synapse_Analytics.svg` |
+| `azurerm_data_factory` | `databases/Data_Factory.svg` |
+| `azurerm_data_factory_integration_runtime_self_hosted` | `databases/Data_Factory.svg` |
+| `azurerm_databricks_workspace` | `databases/Azure_Databricks.svg` |
+| `azurerm_purview_account` | `management_governance/Purview_Accounts.svg` |
+| `azurerm_eventhub_namespace` | `integration/Event_Hubs.svg` |
+
+### Containers & Orchestration
+
+| Terraform resource type | `image=img/lib/azure2/…` |
+|-------------------------|--------------------------|
+| `azurerm_container_app` | `containers/Container_Apps.svg` |
+| `azurerm_container_app_environment` | `containers/Container_Apps.svg` |
+
 ---
 
 ## Unmapped Resources
