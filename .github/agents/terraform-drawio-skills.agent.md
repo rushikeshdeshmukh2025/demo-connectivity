@@ -8,6 +8,7 @@ tools:
   - read/readFile
   - edit/createFile
   - edit/editFiles
+  - drawio/*
 ---
 
 # Terraform → Draw.io (Azure CAF Style — Lean Orchestrator)
@@ -91,13 +92,16 @@ Load and apply skills in this order:
 
 ### Step 8 — Save & clean up
 
-Use `edit/createFile`:
-- `path`: workspace path to `terraform_graph_architecture.drawio`
-- `file_text`: complete `<mxfile>...</mxfile>` XML
+**MANDATORY: Write ONE environment at a time. NEVER generate all tabs in a single tool call.**
 
-**Large file (multi-env, >10K chars):**
-1. `edit/createFile` with first `<diagram>` in `<mxfile>` wrapper
-2. `edit/editFiles` to insert each additional `<diagram>` before `</mxfile>`
+1. Build the XML for the **first** environment tab only.
+2. `edit/createFile` with `<mxfile>` containing that single `<diagram>...</diagram>` and closing `</mxfile>`.
+3. For **each subsequent** environment:
+   - Build that tab's `<diagram>...</diagram>` XML.
+   - `edit/editFiles` to insert it before `</mxfile>`.
+4. After all tabs are written, clean up.
+
+> **Why:** A 3-env diagram with NSG tables exceeds output token limits and causes `file_text: Required` errors. Writing incrementally avoids this.
 
 After saving:
 ```powershell
