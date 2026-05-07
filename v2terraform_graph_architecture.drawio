@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram name="DEV" id="env-dev">
-        <mxGraphModel dx="1248" dy="1529" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2640" pageHeight="1000" math="0" shadow="0">
+        <mxGraphModel dx="1666" dy="1494" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2640" pageHeight="1000" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -23,7 +23,7 @@
                     <mxGeometry x="20" y="50" width="640" height="720" as="geometry"/>
                 </mxCell>
                 <mxCell id="dev-ippool" value="ippool_rus_dev_connectivity_gwc&#xa;10.0.0.0/16" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=9;image=img/lib/azure2/other/Azure_Network_Manager.svg;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#ffffff;rounded=1;arcSize=10;shadow=1;strokeColor=#e0e0e0;fontColor=#333333;" parent="dev-conn-rg" vertex="1">
-                    <mxGeometry x="60" y="50" width="50" height="50" as="geometry"/>
+                    <mxGeometry x="210" y="50" width="50" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="dev-vwan" value="vwan_rus_dev_connectivity_gwc" style="shape=swimlane;html=1;horizontal=1;startSize=40;rounded=1;shadow=0;fillColor=#f3f8fb;strokeColor=#0078d4;fontColor=#0078d4;fontSize=11;fontStyle=1;collapsible=0;container=1;recursiveResize=0;pointerEvents=0;image=img/lib/azure2/networking/Virtual_WANs.svg;imageAlign=left;imageWidth=20;imageHeight=20;spacingLeft=28;" parent="dev-conn-rg" vertex="1">
                     <mxGeometry x="20" y="140" width="600" height="550" as="geometry"/>
