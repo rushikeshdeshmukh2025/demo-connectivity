@@ -1,4 +1,3 @@
-````skill
 ---
 name: drawio-rendering
 description: "Build and validate Draw.io Azure CAF diagrams: XML wrapper, page sizing, two-zone layout, container styles, coordinate system, sizing formula, and quality checklist. USE WHEN: building draw.io layout, page sizing, zone coordinates, container sizing, positioning resources, validating drawio xml, quality checklist, container styles."
@@ -267,5 +266,3 @@ Before saving, verify **every** item:
 
 Output file: **`terraform_graph_architecture.drawio`**
 Use `edit/createFile` to write to workspace root.
-
-````

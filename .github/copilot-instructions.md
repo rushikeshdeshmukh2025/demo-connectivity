@@ -7,13 +7,25 @@
 
 ## Architecture
 
-This repository provisions an Azure hub-and-spoke network topology using **Azure Virtual WAN** (vWAN), deployed entirely in **Germany West Central** (`germanywestcentral` / `gwc`).
+This repository provisions an Azure hub-and-spoke network topology using **Azure Virtual WAN** (vWAN).
+
+| Environment | Location | Region short |
+|-------------|----------|-------------|
+| `dev` | `germanywestcentral` | `gwc` |
+| `pre` | `switzerlandnorth` | `szn` |
+| `prod` | `germanywestcentral` | `gwc` |
 
 ### Resource Groups
-| File | Resource Group | Purpose |
-|------|----------------|---------|
-| `connectivity_rg.tf` | `rg_rus_<env>_connectivity_gwc` | vWAN, vHub, Firewall, IP pool, VNet gateway |
-| `shd_svc_rg.tf` | `rg_rus_<env>_shd_svc_gwc` | Shared services VNet, NSG, Bastion |
+
+All resource groups are defined in `resource_groups.tf`:
+
+| Resource Group | Purpose |
+|----------------|---------|
+| `rg_rus_<env>_connectivity_<region>` | vWAN, vHub, Firewall, IP pool, VNet gateway |
+| `rg_rus_<env>_shd_svc_<region>` | Shared services VNet, NSG, Private Endpoints, Private DNS Zones |
+| `rg_rus_<env>_storage_<region>` | Storage Account |
+| `rg_rus_<env>_key_vault_<region>` | Key Vault |
+| `rg_rus_<env>_bastion_<region>` | Azure Bastion (subnet in shared services VNet) |
 
 ### IP Address Plan
 - IP pool: `10.0.0.0/16` (managed via `azurerm_network_manager_static_cidr`)
@@ -66,7 +78,7 @@ terraform apply -var-file=environments/dev.tfvars
 tflint
 ```
 
-Environments: `dev`, `test`, `pt`, `live`, `global`, `rnd` — each has a corresponding `environments/<env>.tfvars`.
+Environments: `dev`, `pre`, `prod` — each has a corresponding `environments/<env>.tfvars`.
 
 ## Naming Conventions
 
@@ -74,7 +86,7 @@ Resource names follow this pattern:
 ```
 <type_prefix>_<company_prefix>_<environment>_<purpose>_<region_short>
 ```
-**Company prefix:** `rus` | **Region short:** `gwc`
+**Company prefix:** `rus` | **Region short:** `gwc` (dev/prod) or `szn` (pre)
 
 Common type prefixes: `rg_`, `vwan_`, `vhub_`, `afw_`, `afwp_`, `vnet_`, `snet_`, `nsg_`, `ippool_`, `bas_`
 
