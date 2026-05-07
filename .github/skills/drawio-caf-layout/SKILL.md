@@ -1,6 +1,6 @@
 ---
 name: drawio-caf-layout
-description: "Build the Draw.io page layout for Azure CAF / Landing Zone diagrams: adaptive page sizing, four-zone horizontal layout, container sizing formula, and precise placement coordinates for all zones. USE WHEN: building draw.io layout, page sizing, zone coordinates, container sizing, positioning resources."
+description: "Build the Draw.io page layout for Azure CAF / Landing Zone diagrams: adaptive page sizing, two-zone horizontal layout, container sizing formula, and precise placement coordinates. USE WHEN: building draw.io layout, page sizing, zone coordinates, container sizing, positioning resources."
 ---
 
 # Draw.io CAF Layout Rules
@@ -45,24 +45,36 @@ Select page dimensions based on total resolved resource count:
 
 ---
 
-## 3 — Four-Zone Horizontal Layout
+## 3 — Two-Zone Horizontal Layout
 
-Emit **four zone background rectangles first** (lowest z-order, `parent="1"`).  
-Style for all zone backgrounds:
+Emit exactly **TWO zone background rectangles first** (lowest z-order, `parent="1"`).
 
-```
-rounded=0;whiteSpace=wrap;html=1;movable=0;resizable=0;selectable=0;
-opacity=60;strokeWidth=0;
-```
+**Explicitly forbidden:** Do NOT create separate background rectangles for "Connectivity", "Shared Services", or "Landing Zones". The single Azure box contains everything.
 
-| Zone | X start | X end | Fill colour | Hex | Purpose |
-|------|---------|-------|-------------|-----|---------|
-| **On-Premises** | 0 | 300 | Beige | `#f5f0e6` | On-prem DC / branch, VPN tunnel |
-| **Connectivity** | 320 | 980 | Blue | `#e8f0fe` | Subscription, RG, vWAN/vHub or Hub VNet |
-| **Shared Services** | 1000 | 1500 | Green | `#eaf5ea` | Shared services spoke VNet, Bastion |
-| **Landing Zones** | 1520 | 2400 | Yellow | `#fef9e7` | App spokes — AKS, APIM, App GW |
+| Zone | X range | Fill colour | Stroke colour | Purpose |
+|------|---------|-------------|---------------|---------|
+| **On-Premises** | 0–300 | `#f5f0e6` (beige) | `#808080` | On-prem DC / branch, VPN tunnel |
+| **Azure** | 320–pageWidth | `#e8f0fe` (light blue) | `#0078D4` | ALL Azure components — subscriptions, RGs, vWAN, VNets, everything |
 
 Zone height = `pageHeight − 20`.
+
+### On-Premises zone style
+```
+rounded=1;arcSize=5;fillColor=#f5f0e6;strokeColor=#808080;strokeWidth=1;
+container=0;movable=0;resizable=0;selectable=0;opacity=60;
+html=1;whiteSpace=wrap;verticalAlign=top;fontStyle=1;fontSize=14;
+fontColor=#333333;spacingTop=8;spacingLeft=10;
+```
+
+### Azure zone style
+```
+rounded=1;arcSize=5;fillColor=#e8f0fe;strokeColor=#0078D4;strokeWidth=2;
+container=0;movable=0;resizable=0;selectable=0;opacity=60;
+html=1;whiteSpace=wrap;verticalAlign=top;fontStyle=1;fontSize=14;
+fontColor=#0078D4;spacingTop=8;spacingLeft=10;
+```
+
+Zone backgrounds are non-interactive rectangles emitted **first** (lowest z-order). All resource containers (Subscription, RGs, VNets) sit on top with `parent="1"`.
 
 ---
 
@@ -75,11 +87,11 @@ Zone height = `pageHeight − 20`.
 **Worked example:**
 
 ```
-Subscription at canvas (20, 20), size 1200×800
- └─ RG at (30, 50) inside Subscription → canvas (50, 70)
-     └─ VNet at (20, 40) inside RG → canvas (70, 110)
-          └─ Subnet at (20, 40) inside VNet → canvas (90, 150)
-               └─ VM icon at (25, 35) inside Subnet → canvas (115, 185)
+Subscription at canvas (330, 40), size 1920×700
+ └─ RG at (20, 60) inside Subscription → canvas (350, 100)
+     └─ VNet at (20, 50) inside RG → canvas (370, 150)
+          └─ Subnet at (20, 40) inside VNet → canvas (390, 190)
+               └─ VM icon at (25, 35) inside Subnet → canvas (415, 225)
 ```
 
 ---
@@ -121,37 +133,54 @@ height = 30 + 1 × (50+30) − 30 + 2×25 = 130
 
 ## 6 — Placement Coordinates
 
-### 6.1 On-Premises Zone
+All Azure resources are placed **inside the single Azure zone**, organized by Resource Group. RG placement is determined by reading `resource_group_name` from root module blocks.
+
+### 6.1 On-Premises Zone (x = 10–290)
+
+Y-alignment: derive from VPN Gateway position so the On-Prem → VPN GW edge is perfectly horizontal.
 
 | Element | x | y | w | h |
 |---------|---|---|---|---|
-| On-Premises box | 30 | 120 | 230 | 90 |
+| On-Premises box | 30 | *derived* | 230 | 120 |
 
-### 6.2 Connectivity Hub Zone
+### 6.2 Azure Zone — Subscription and Resource Groups
+
+All RGs sit inside a single Subscription container within the Azure zone.
 
 | Element | x | y | w | h | Parent |
 |---------|---|---|---|---|--------|
-| Connectivity RG | 330 | 60 | 620 | 620 | `1` |
+| Subscription | 330 | 40 | 1920 | 700 | `1` |
+| Connectivity RG | 20 | 60 | 620 | 580 | subscription |
+| Shared Services RG | 680 | 60 | 460 | 580 | subscription |
+
+Additional RGs (e.g. Landing Zone workloads) are placed to the right of existing RGs, spaced 40 px apart.
+
+### 6.3 Connectivity RG Contents
+
+| Element | x | y | w | h | Parent |
+|---------|---|---|---|---|--------|
 | IP Pool node | 20 | 50 | 180 | 70 | `conn_rg` |
-| vWAN container | 20 | 150 | 580 | 430 | `conn_rg` |
-| vHub container | 20 | 50 | 540 | 330 | `vwan` |
+| vWAN container | 20 | 150 | 580 | 380 | `conn_rg` |
+| vHub container | 20 | 50 | 540 | 290 | `vwan` |
 | Firewall Policy | 20 | 60 | 160 | 80 | `vhub` |
 | Azure Firewall | 200 | 60 | 160 | 80 | `vhub` |
 | VPN Gateway | 380 | 60 | 140 | 80 | `vhub` |
 
-### 6.3 Shared Services Zone
+### 6.4 Shared Services RG Contents
 
 | Element | x | y | w | h | Parent |
 |---------|---|---|---|---|--------|
-| Shared Services RG | 1000 | 120 | 460 | 560 | `1` |
 | VNet container | 20 | 50 | 420 | 470 | `shd_rg` |
 | AzureBastionSubnet | 20 | 50 | 380 | 130 | `vnet` |
 | Private Endpoint subnet | 20 | 200 | 380 | 120 | `vnet` |
 | App subnet | 20 | 340 | 380 | 120 | `vnet` |
+| Standalone resources | 20 | 530 | (calculated) | (calculated) | `shd_rg` |
 
-### 6.4 Landing Zones Zone
+Standalone resources (Storage Account, Key Vault, DNS Zones) that belong to this RG but not to any subnet are placed as direct children of the RG, below the VNet.
 
-Application spoke VNets laid out side-by-side starting at x = 1490, spaced 40 px apart.
+### 6.5 Landing Zone Spokes (if present)
+
+Application spoke VNets are placed in additional RGs to the right of Shared Services RG, still inside the Subscription container.
 
 | Pattern | Key resources |
 |---------|---------------|
@@ -160,9 +189,7 @@ Application spoke VNets laid out side-by-side starting at x = 1490, spaced 40 px
 | Web App | `azurerm_app_service`, `azurerm_service_plan` |
 | VM workload | `azurerm_linux_virtual_machine` / `azurerm_windows_virtual_machine` |
 
-If no landing zone spokes are detected, render zone as an empty dashed rectangle labelled `"Landing Zones (future spokes)"`.
-
-### 6.5 Key Edges
+### 6.6 Key Edges
 
 | From | To | Label | Edge type |
 |------|----|-------|-----------|

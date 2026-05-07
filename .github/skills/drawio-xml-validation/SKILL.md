@@ -118,27 +118,25 @@ Before delivering the `.drawio` file, verify **every** item:
 - [ ] All service icons are **50 × 50 px**
 - [ ] Every `<diagram>` block has a unique `id` attribute
 - [ ] No `mxCell id` is duplicated within its diagram
-- [ ] Four zone background rectangles exist in every tab (On-Prem, Connectivity, Shared Services, Landing Zones)
+- [ ] Exactly **TWO** zone background rectangles exist: On-Premises (`#f5f0e6`) and Azure (`#e8f0fe`) — NO separate Connectivity/Shared Services/Landing Zones zones
 - [ ] A Hub ↔ Spoke edge exists for every spoke VNet
-- [ ] An On-Prem → VPN/ER GW edge exists (if on-prem resources are detected)
-- [ ] Every NSG badge: `parent` = VNet container (not subnet), size = 36 × 36 px (or 30 × 30 px for detail view)
-- [ ] NSG badges overlap the **top-left border** of their associated subnet
-- [ ] Every NSG has a rules table in the **right-side panel** (canvas-absolute `parent="1"`, stacked vertically aligned with subnet)
-- [ ] NSG rules tables are positioned to the **right** of the VNet container — not below the diagram
-- [ ] Each NSG rules table has a **dashed connector** edge from the NSG badge (`source`) to the table (`target`), style `exitX=1;exitY=0.5` → `entryX=0;entryY=0.5;endArrow=none;dashed=1;dashPattern=1 3;strokeWidth=2`
+- [ ] An On-Prem → VPN/ER GW edge exists (if on-prem resources are detected); the edge must be perfectly horizontal (Y-aligned)
+- [ ] Every NSG badge: `parent` = VNet container (not subnet), size = 36 × 36 px
+- [ ] NSG badges overlap the **right border** of their associated subnet (`x = subnet_x + subnet_width − 18`, `y = subnet_y − 18` relative to VNet)
+- [ ] Every NSG has a rules table placed **outside the Azure zone box** (canvas-absolute, `parent="1"`) in a two-column grid layout
+- [ ] **NO** connector edges between NSG badges and NSG rules tables — badges are self-explanatory
 - [ ] NSG rules tables list all resolved inbound and outbound rules from Terraform; deny rows use `style="background:#FFEBEE;"`
-- [ ] `pageWidth` is extended by 440 px when NSG side-panel tables are present
+- [ ] `pageWidth` is extended by **820 px** when NSG side-panel tables are present (two columns × 400 + gaps)
 - [ ] Page size matches resource count (A4 for ≤15 · A3 for 16–40 · custom 2400×1200 for 41+)
 - [ ] IP address ranges / CIDRs are included in VNet and subnet labels where architecturally relevant
 - [ ] `<mxfile host="GitHub Copilot" version="24.0.0">` wrapper encloses all `<diagram>` blocks — a bare `<mxGraphModel>` root is invalid
-- [ ] Landing zone spoke VNets are placed inside the Landing Zones zone (x ≥ 1520)
-- [ ] **No** connector edges between NSG badge and subnet — only badge → table connectors are permitted
-- [ ] Output file is saved as `Azure_styled_architecture.drawio` — **never** opened in the online Draw.io editor
+- [ ] Connections Legend is placed **below** the On-Premises zone (outside it, not inside)
+- [ ] Output file is saved as `terraform_graph_architecture.drawio`
 
 ---
 
 ## Save Rule
 
-Output file name: **`Azure_styled_architecture.drawio`**
+Output file name: **`terraform_graph_architecture.drawio`**
 
 Use `edit/createFile` to write the file to the workspace root. Do not open any online editor.

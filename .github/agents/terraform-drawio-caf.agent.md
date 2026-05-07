@@ -15,7 +15,43 @@ tools:
 
 Generates or **updates** an Azure CAF-style `.drawio` diagram using `terraform graph` DOT output as the dependency source. Rendering logic is delegated to skills for speed and maintainability.
 
-Output file: `v2_terraform_graph_architecture.drawio`
+Output file: `terraform_graph_architecture.drawio`
+
+---
+
+## CRITICAL INLINE RULES (override any skill if conflicting)
+
+### Two-Zone Layout — MANDATORY
+The diagram has exactly **TWO** zone background rectangles. Do NOT emit separate Connectivity, Shared Services, or Landing Zones backgrounds.
+
+| Zone | X range | Fill | Stroke |
+|------|---------|------|--------|
+| On-Premises | 0–300 | `#f5f0e6` | `#808080` |
+| Azure | 320–pageWidth | `#e8f0fe` | `#0078D4` |
+
+### NSG Rules — NO Connectors
+- NSG badges: parent = VNet (NOT subnet), 36×36, positioned on subnet **right border** (`x = subnet_x + subnet_width − 18`)
+- NSG rules tables: placed **outside Azure zone box** in two-column grid, `parent="1"`
+- **FORBIDDEN:** Do NOT emit any connector edge between NSG badges and NSG tables
+- Extend `pageWidth` by 820 px when tables present
+
+### Container Hierarchy
+```
+Subscription (parent="1")
+ └── Resource Group
+      ├── vWAN → vHub → {Firewall, FW Policy, VPN GW}
+      ├── VNet → Subnet → {leaf nodes}
+      └── Standalone resources (IP Pool, DNS Zone, Storage, Key Vault)
+```
+
+### Resource Group Classification — CRITICAL
+You MUST read the actual `resource_group_name` argument from each root module block to determine which RG a resource belongs to. Do NOT assume based on resource type alone.
+
+### On-Prem → VPN GW Horizontal Alignment
+The On-Premises icon centre and VPN Gateway icon centre MUST share the same canvas-absolute Y coordinate. A diagonal line is a validation failure.
+
+### Connections Legend
+Place an HTML legend table **below** the On-Premises zone (outside it). Do NOT place inside On-Premises zone.
 
 ---
 
@@ -24,7 +60,7 @@ Output file: `v2_terraform_graph_architecture.drawio`
 | Mode | Trigger | Behaviour |
 |------|---------|-----------|
 | **Generate** | No existing `.drawio` file or user says "generate" | Full diagram creation |
-| **Update** | Existing `v2_terraform_graph_architecture.drawio` present and user says "update" / "refresh" | Diff-based incremental update |
+| **Update** | Existing `terraform_graph_architecture.drawio` present and user says "update" / "refresh" | Diff-based incremental update |
 
 ---
 
@@ -119,11 +155,14 @@ Delegate to skills in this order:
 
 ### Step 8 — Save & clean up
 
-```powershell
-# Save diagram
-# (use edit/createFile to write v2_terraform_graph_architecture.drawio)
+Use `edit/createFile` with these **exact parameters**:
+- `path`: full workspace path to `terraform_graph_architecture.drawio`
+- `file_text`: the complete XML string (the entire `<mxfile>...</mxfile>` content)
 
-# Clean up temp file
+Both parameters are **required**. Do not omit `file_text`.
+
+After saving, clean up:
+```powershell
 Remove-Item .terraform-graph.dot -ErrorAction SilentlyContinue
 ```
 
@@ -131,7 +170,7 @@ Remove-Item .terraform-graph.dot -ErrorAction SilentlyContinue
 
 ## Update Mode — Incremental Refresh
 
-When an existing `v2_terraform_graph_architecture.drawio` is detected:
+When an existing `terraform_graph_architecture.drawio` is detected:
 
 ### Step U1 — Regenerate graph & classify
 
@@ -163,21 +202,89 @@ After adding/removing cells, recalculate container sizes bottom-up using the siz
 
 ### Step U5 — Save
 
-Write updated XML back to `v2_terraform_graph_architecture.drawio`.
+Write updated XML back to `terraform_graph_architecture.drawio`.
 
 ---
 
-## Container Hierarchy (Golden Rule)
+## Container Styles (inline reference)
 
+### Subscription
 ```
-Subscription
- └── Resource Group
-      ├── vWAN → vHub → {Firewall, FW Policy, VPN GW}
-      ├── VNet → Subnet → {leaf nodes}
-      └── Standalone resources (IP Pool, DNS Zone, Storage, etc.)
+rounded=1;arcSize=3;fillColor=none;strokeColor=#E65100;dashed=1;
+dashPattern=8 4;strokeWidth=2;container=1;collapsible=0;
+recursiveResize=0;html=1;whiteSpace=wrap;verticalAlign=top;
+fontStyle=1;fontSize=13;fontColor=#E65100;spacingTop=5;spacingLeft=10;
 ```
 
-Children are **always positioned relative to their parent**.
+### Resource Group
+```
+rounded=1;arcSize=5;fillColor=#DAE8FC;strokeColor=#0078D4;strokeWidth=1;
+container=1;collapsible=0;recursiveResize=0;html=1;whiteSpace=wrap;
+verticalAlign=top;fontStyle=1;fontSize=12;fontColor=#1A237E;
+spacingTop=5;spacingLeft=28;align=left;
+image=img/lib/azure2/general/Resource_Groups.svg;
+imageAlign=left;imageVerticalAlign=top;imageWidth=20;imageHeight=20;
+```
+
+### vWAN Container
+```
+shape=swimlane;html=1;horizontal=1;startSize=40;rounded=1;shadow=0;
+fillColor=#f3f8fb;strokeColor=#0078d4;fontColor=#0078d4;fontSize=11;
+fontStyle=1;collapsible=1;isContainer=1;
+image=img/lib/azure2/networking/Virtual_WANs.svg;
+imageAlign=left;imageWidth=20;imageHeight=20;spacingLeft=28;
+```
+
+### vHub Container
+```
+shape=swimlane;html=1;horizontal=1;startSize=40;rounded=1;shadow=0;
+fillColor=#f3f8fb;strokeColor=#0078d4;fontColor=#0078d4;fontSize=11;
+fontStyle=1;collapsible=1;isContainer=1;
+image=img/lib/azure2/networking/Virtual_WAN_Hub.svg;
+imageAlign=left;imageWidth=20;imageHeight=20;spacingLeft=28;
+```
+
+### Virtual Network
+```
+rounded=1;arcSize=5;fillColor=#FFFFFF;strokeColor=#0078D4;dashed=1;
+dashPattern=5 5;strokeWidth=1;container=1;collapsible=0;
+recursiveResize=0;html=1;whiteSpace=wrap;verticalAlign=top;
+fontStyle=1;fontSize=12;fontColor=#1A237E;spacingTop=5;spacingLeft=44;align=left;
+image=img/lib/azure2/networking/Virtual_Networks.svg;
+imageAlign=left;imageVerticalAlign=top;imageWidth=36;imageHeight=36;
+```
+
+### Subnet
+```
+rounded=1;arcSize=3;fillColor=#E3F2FD;strokeColor=#808080;dashed=1;
+dashPattern=3 3;strokeWidth=1;container=1;collapsible=0;
+recursiveResize=0;html=1;whiteSpace=wrap;verticalAlign=top;
+fontSize=10;fontColor=#424242;spacingTop=5;spacingLeft=28;align=left;
+image=img/lib/azure2/networking/Subnets.svg;
+imageAlign=left;imageVerticalAlign=top;imageWidth=20;imageHeight=20;
+```
+
+### On-Premises Container
+```
+rounded=1;arcSize=5;fillColor=#F5F5F5;strokeColor=#808080;strokeWidth=1;
+container=1;collapsible=0;recursiveResize=0;html=1;whiteSpace=wrap;
+verticalAlign=top;fontStyle=1;fontSize=12;fontColor=#333333;
+spacingTop=5;spacingLeft=10;
+```
+
+---
+
+## Edge Styles
+
+**Every edge MUST include `flowAnimation=1`.** No exceptions.
+
+| Relationship | Style |
+|:--|:--|
+| Hub ↔ Spoke | `rounded=1;orthogonalLoop=1;jettySize=auto;endArrow=block;startArrow=block;endFill=1;startFill=1;strokeColor=#0078D4;strokeWidth=2;flowAnimation=1;html=1;fontSize=9;` |
+| On-Prem → VPN GW | `edgeStyle=none;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#8d6e32;strokeWidth=2;flowAnimation=1;fontSize=9;exitX=1;exitY=0.5;exitPerimeter=0;entryX=0;entryY=0.5;entryPerimeter=0;` |
+| Property ref (.id) | `rounded=1;orthogonalLoop=1;jettySize=auto;endArrow=block;endFill=1;strokeColor=#0078D4;flowAnimation=1;html=1;fontSize=9;` |
+| Module param (dotted grey) | `rounded=1;orthogonalLoop=1;jettySize=auto;dashed=1;dashPattern=1 4;endArrow=open;endFill=0;strokeColor=#999999;flowAnimation=1;html=1;fontSize=9;` |
+| VNet Peering (classic) | `rounded=1;orthogonalLoop=1;jettySize=auto;endArrow=block;startArrow=block;endFill=1;startFill=1;strokeColor=#0078D4;strokeWidth=2;flowAnimation=1;html=1;fontSize=9;` |
 
 ---
 
@@ -196,6 +303,10 @@ Before saving, verify against `drawio-xml-validation` skill checklist:
 - Every `<mxCell>` has `html=1`
 - Children relative to parent, coordinates multiples of 10
 - `flowAnimation=1` on all edges
+- Exactly 2 zone backgrounds (On-Premises + Azure)
+- NSG badges on right border, NO connectors to tables
 - Container hierarchy correct
+- On-Prem → VPN GW line is horizontal (Y-aligned)
 - `<mxfile>` wrapper present
 - No duplicate IDs
+- Connections Legend below On-Premises zone (not inside it)

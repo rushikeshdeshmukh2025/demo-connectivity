@@ -1,0 +1,133 @@
+<mxfile host="65bd71144e">
+    <diagram name="DEV" id="env-dev">
+        <mxGraphModel dx="1096" dy="538" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2100" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="dev-zone-onprem" value="On-Premises" style="rounded=0;whiteSpace=wrap;html=1;movable=0;resizable=0;selectable=0;opacity=60;strokeWidth=0;fillColor=#f5f0e6;verticalAlign=top;fontStyle=1;fontSize=13;fontColor=#7B5B00;spacingTop=8;" parent="1" vertex="1">
+                    <mxGeometry width="310" height="1100" as="geometry"/>
+                </mxCell>
+                <mxCell id="dev-zone-conn" value="Connectivity" style="rounded=0;whiteSpace=wrap;html=1;movable=0;resizable=0;selectable=0;opacity=60;strokeWidth=0;fillColor=#e8f0fe;verticalAlign=top;fontStyle=1;fontSize=13;fontColor=#1A237E;spacingTop=8;" parent="1" vertex="1">
+                    <mxGeometry x="320" width="660" height="1100" as="geometry"/>
+                </mxCell>
+                <mxCell id="dev-zone-shd" value="Shared Services" style="rounded=0;whiteSpace=wrap;html=1;movable=0;resizable=0;selectable=0;opacity=60;strokeWidth=0;fillColor=#eaf5ea;verticalAlign=top;fontStyle=1;fontSize=13;fontColor=#1B5E20;spacingTop=8;" parent="1" vertex="1">
+                    <mxGeometry x="990" width="560" height="1100" as="geometry"/>
+                </mxCell>
+                <mxCell id="dev-zone-lz" value="Landing Zones (future spokes)" style="rounded=0;whiteSpace=wrap;html=1;movable=0;resizable=0;selectable=0;opacity=60;strokeWidth=0;fillColor=#fef9e7;verticalAlign=top;fontStyle=1;fontSize=13;fontColor=#7B5B00;spacingTop=8;" parent="1" vertex="1">
+                    <mxGeometry x="1560" width="540" height="1100" as="geometry"/>
+                </mxCell>
+                <mxCell id="dev-onprem" value="On-Premises&#xa;Data Centre" style="rounded=1;arcSize=5;fillColor=#F5F5F5;strokeColor=#808080;strokeWidth=1;container=1;collapsible=0;recursiveResize=0;html=1;whiteSpace=wrap;verticalAlign=top;fontStyle=1;fontSize=12;fontColor=#333333;spacingTop=5;spacingLeft=10;image=img/lib/azure2/networking/Local_Network_Gateways.svg;imageAlign=left;imageWidth=24;imageHeight=24;spacingLeft=34;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="420" width="230" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="dev-conn-rg" value="rg_rus_dev_connectivity_gwc" style="rounded=1;arcSize=5;fillColor=#DAE8FC;strokeColor=#0078D4;strokeWidth=1;container=1;collapsible=0;recursiveResize=0;html=1;whiteSpace=wrap;verticalAlign=top;fontStyle=1;fontSize=12;fontColor=#1A237E;spacingTop=5;spacingLeft=10;image=img/lib/azure2/general/Resource_Groups.svg;imageAlign=left;imageWidth=20;imageHeight=20;spacingLeft=28;" parent="1" vertex="1">
+                    <mxGeometry x="340" y="60" width="620" height="700" as="geometry"/>
+                </mxCell>
+                <mxCell id="dev-ippool" value="ippool_rus_dev&#xa;_connectivity_gwc&#xa;10.0.0.0/16" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=9;image=img/lib/azure2/other/Azure_Network_Manager.svg;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#ffffff;rounded=1;arcSize=10;shadow=1;strokeColor=#e0e0e0;fontColor=#333333;" parent="dev-conn-rg" vertex="1">
+                    <mxGeometry x="500" y="30" width="50" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="dev-vwan" value="vwan_rus_dev_connectivity_gwc" style="shape=swimlane;html=1;horizontal=1;startSize=40;rounded=1;shadow=0;fillColor=#f3f8fb;strokeColor=#0078d4;fontColor=#0078d4;fontSize=11;fontStyle=1;collapsible=1;container=1;recursiveResize=0;image=img/lib/azure2/networking/Virtual_WANs.svg;imageAlign=left;imageWidth=20;imageHeight=20;spacingLeft=28;" parent="dev-conn-rg" vertex="1">
+                    <mxGeometry x="20" y="100" width="580" height="570" as="geometry"/>
+                </mxCell>
+                <mxCell id="dev-vhub" value="vhub_rus_dev_connectivity_gwc&#xa;10.0.0.0/23" style="shape=swimlane;html=1;horizontal=1;startSize=40;rounded=1;shadow=0;fillColor=#f3f8fb;strokeColor=#0078d4;fontColor=#0078d4;fontSize=11;fontStyle=1;collapsible=1;container=1;recursiveResize=0;image=img/lib/azure2/networking/Virtual_WAN_Hub.svg;imageAlign=left;imageWidth=20;imageHeight=20;spacingLeft=28;" parent="dev-vwan" vertex="1">
+                    <mxGeometry x="20" y="60" width="540" height="480" as="geometry"/>
+                </mxCell>
+                <mxCell id="dev-fwp" value="afwp_rus_dev&#xa;_connectivity_gwc" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=9;image=img/lib/azure2/networking/Azure_Firewall_Policy.svg;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#ffffff;rounded=1;arcSize=10;shadow=1;strokeColor=#e0e0e0;fontColor=#333333;" parent="dev-vhub" vertex="1">
+                    <mxGeometry x="50" y="100" width="50" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="dev-fw" value="afw_rus_dev&#xa;_connectivity_gwc" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=9;image=img/lib/azure2/networking/Firewalls.svg;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#ffffff;rounded=1;arcSize=10;shadow=1;strokeColor=#e0e0e0;fontColor=#333333;" parent="dev-vhub" vertex="1">
+                    <mxGeometry x="220" y="100" width="50" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="dev-vpngw" value="vpng_rus_dev&#xa;_connectivity_gwc" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=9;image=img/lib/azure2/networking/Virtual_Network_Gateways.svg;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#ffffff;rounded=1;arcSize=10;shadow=1;strokeColor=#e0e0e0;fontColor=#333333;" parent="dev-vhub" vertex="1">
+                    <mxGeometry x="380" y="240" width="50" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="dev-shd-rg" value="rg_rus_dev_shd_svc_gwc" style="rounded=1;arcSize=5;fillColor=#DAE8FC;strokeColor=#0078D4;strokeWidth=1;container=1;collapsible=0;recursiveResize=0;html=1;whiteSpace=wrap;verticalAlign=top;fontStyle=1;fontSize=12;fontColor=#1A237E;spacingTop=5;spacingLeft=10;image=img/lib/azure2/general/Resource_Groups.svg;imageAlign=left;imageWidth=20;imageHeight=20;spacingLeft=28;" parent="1" vertex="1">
+                    <mxGeometry x="1010" y="60" width="520" height="880" as="geometry"/>
+                </mxCell>
+                <mxCell id="dev-vnet" value="vnet_rus_dev_shared_services_gwc&#xa;10.0.2.0/23" style="rounded=1;arcSize=5;fillColor=#FFFFFF;strokeColor=#0078D4;dashed=1;dashPattern=5 5;strokeWidth=1;container=1;collapsible=0;recursiveResize=0;html=1;whiteSpace=wrap;verticalAlign=top;fontStyle=1;fontSize=12;fontColor=#1A237E;spacingTop=5;spacingLeft=10;image=img/lib/azure2/networking/Virtual_Networks.svg;imageAlign=left;imageWidth=20;imageHeight=20;spacingLeft=28;" parent="dev-shd-rg" vertex="1">
+                    <mxGeometry x="20" y="50" width="480" height="620" as="geometry"/>
+                </mxCell>
+                <mxCell id="dev-snet-bastion" value="AzureBastionSubnet&#xa;10.0.2.0/27" style="rounded=1;arcSize=3;fillColor=#E3F2FD;strokeColor=#808080;dashed=1;dashPattern=3 3;strokeWidth=1;container=1;collapsible=0;recursiveResize=0;html=1;whiteSpace=wrap;verticalAlign=top;fontSize=10;fontColor=#424242;spacingTop=5;spacingLeft=8;" parent="dev-vnet" vertex="1">
+                    <mxGeometry x="20" y="50" width="430" height="130" as="geometry"/>
+                </mxCell>
+                <mxCell id="dev-bastion" value="bas_rus_dev&#xa;_connectivity_gwc" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=9;image=img/lib/azure2/networking/Bastions.svg;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#ffffff;rounded=1;arcSize=10;shadow=1;strokeColor=#e0e0e0;fontColor=#333333;" parent="dev-snet-bastion" vertex="1">
+                    <mxGeometry x="60" y="35" width="50" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="dev-pip-bastion" value="pip_bas_rus_dev&#xa;_connectivity_gwc" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=9;image=img/lib/azure2/networking/Public_IP_Addresses.svg;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#ffffff;rounded=1;arcSize=10;shadow=1;strokeColor=#e0e0e0;fontColor=#333333;" parent="dev-snet-bastion" vertex="1">
+                    <mxGeometry x="190" y="35" width="50" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="dev-snet-pe" value="snet_rus_dev_private_endpoint_gwc&#xa;10.0.2.32/27" style="rounded=1;arcSize=3;fillColor=#E3F2FD;strokeColor=#808080;dashed=1;dashPattern=3 3;strokeWidth=1;container=1;collapsible=0;recursiveResize=0;html=1;whiteSpace=wrap;verticalAlign=top;fontSize=10;fontColor=#424242;spacingTop=5;spacingLeft=8;" parent="dev-vnet" vertex="1">
+                    <mxGeometry x="20" y="210" width="430" height="130" as="geometry"/>
+                </mxCell>
+                <mxCell id="dev-pe-blob" value="pep_rus_dev&#xa;_storage_blob_gwc" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=9;image=img/lib/azure2/networking/Private_Endpoint.svg;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#ffffff;rounded=1;arcSize=10;shadow=1;strokeColor=#e0e0e0;fontColor=#333333;" parent="dev-snet-pe" vertex="1">
+                    <mxGeometry x="60" y="35" width="50" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="dev-pe-vault" value="pep_rus_dev&#xa;_key_vault_gwc" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=9;image=img/lib/azure2/networking/Private_Endpoint.svg;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#ffffff;rounded=1;arcSize=10;shadow=1;strokeColor=#e0e0e0;fontColor=#333333;" parent="dev-snet-pe" vertex="1">
+                    <mxGeometry x="190" y="35" width="50" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="dev-snet-app" value="snet_rus_dev_app_gwc&#xa;10.0.2.64/27" style="rounded=1;arcSize=3;fillColor=#E3F2FD;strokeColor=#808080;dashed=1;dashPattern=3 3;strokeWidth=1;container=1;collapsible=0;recursiveResize=0;html=1;whiteSpace=wrap;verticalAlign=top;fontSize=10;fontColor=#424242;spacingTop=5;spacingLeft=8;" parent="dev-vnet" vertex="1">
+                    <mxGeometry x="20" y="370" width="430" height="130" as="geometry"/>
+                </mxCell>
+                <mxCell id="dev-nsg-bastion" value="nsg_rus_dev&#xa;_bastion_gwc" style="image;aspect=fixed;html=1;points=[];align=center;imageAlign=center;imageVerticalAlign=middle;verticalAlign=bottom;verticalLabelPosition=bottom;labelPosition=center;rounded=1;fontSize=8;fontColor=#333333;shadow=0;strokeColor=none;fillColor=none;image=img/lib/azure2/networking/Network_Security_Groups.svg;" parent="dev-vnet" vertex="1">
+                    <mxGeometry x="30" y="32" width="36" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="dev-nsg-pe" value="nsg_rus_dev&#xa;_private_endpoint_gwc" style="image;aspect=fixed;html=1;points=[];align=center;imageAlign=center;imageVerticalAlign=middle;verticalAlign=bottom;verticalLabelPosition=bottom;labelPosition=center;rounded=1;fontSize=8;fontColor=#333333;shadow=0;strokeColor=none;fillColor=none;image=img/lib/azure2/networking/Network_Security_Groups.svg;" parent="dev-vnet" vertex="1">
+                    <mxGeometry x="30" y="192" width="36" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="dev-nsg-app" value="nsg_rus_dev&#xa;_app_gwc" style="image;aspect=fixed;html=1;points=[];align=center;imageAlign=center;imageVerticalAlign=middle;verticalAlign=bottom;verticalLabelPosition=bottom;labelPosition=center;rounded=1;fontSize=8;fontColor=#333333;shadow=0;strokeColor=none;fillColor=none;image=img/lib/azure2/networking/Network_Security_Groups.svg;" parent="dev-vnet" vertex="1">
+                    <mxGeometry x="30" y="352" width="36" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="dev-dns-blob" value="privatelink.blob&#xa;.core.windows.net" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=9;image=img/lib/azure2/networking/DNS_Zones.svg;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#ffffff;rounded=1;arcSize=10;shadow=1;strokeColor=#e0e0e0;fontColor=#333333;" parent="dev-shd-rg" vertex="1">
+                    <mxGeometry x="40" y="700" width="50" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="dev-dns-vault" value="privatelink.vaultcore&#xa;.azure.net" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=9;image=img/lib/azure2/networking/DNS_Zones.svg;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#ffffff;rounded=1;arcSize=10;shadow=1;strokeColor=#e0e0e0;fontColor=#333333;" parent="dev-shd-rg" vertex="1">
+                    <mxGeometry x="150" y="700" width="50" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="dev-storage" value="strusdevshdgwc" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=9;image=img/lib/azure2/storage/Storage_Accounts.svg;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#ffffff;rounded=1;arcSize=10;shadow=1;strokeColor=#e0e0e0;fontColor=#333333;" parent="dev-shd-rg" vertex="1">
+                    <mxGeometry x="300" y="700" width="50" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="dev-kv" value="kv-rus-dev-shd-gwc" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=9;image=img/lib/azure2/security/Key_Vaults.svg;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#ffffff;rounded=1;arcSize=10;shadow=1;strokeColor=#e0e0e0;fontColor=#333333;" parent="dev-shd-rg" vertex="1">
+                    <mxGeometry x="420" y="700" width="50" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="dev-nsg-table-bastion" value="&lt;table border=&quot;1&quot; cellpadding=&quot;4&quot; cellspacing=&quot;0&quot; style=&quot;border-collapse:collapse;font-size:10px;width:100%;&quot;&gt;&lt;tr style=&quot;background:#0078D4;color:white;&quot;&gt;&lt;td colspan=&quot;6&quot; style=&quot;font-weight:bold;padding:6px;&quot;&gt;🛡 nsg_rus_dev_bastion_gwc&lt;/td&gt;&lt;/tr&gt;&lt;tr style=&quot;background:#E3F2FD;&quot;&gt;&lt;td colspan=&quot;6&quot; style=&quot;font-weight:bold;text-align:center;padding:4px;&quot;&gt;↓ Inbound Rules&lt;/td&gt;&lt;/tr&gt;&lt;tr style=&quot;background:#f5f5f5;font-weight:bold;&quot;&gt;&lt;td&gt;Name&lt;/td&gt;&lt;td&gt;Pri&lt;/td&gt;&lt;td&gt;Src&lt;/td&gt;&lt;td&gt;Dst&lt;/td&gt;&lt;td&gt;Port&lt;/td&gt;&lt;td&gt;Proto&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;AllowHttpsInbound&lt;/td&gt;&lt;td&gt;120&lt;/td&gt;&lt;td&gt;Internet&lt;/td&gt;&lt;td&gt;*&lt;/td&gt;&lt;td&gt;443&lt;/td&gt;&lt;td&gt;Tcp&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;AllowGatewayMgr&lt;/td&gt;&lt;td&gt;130&lt;/td&gt;&lt;td&gt;GatewayMgr&lt;/td&gt;&lt;td&gt;*&lt;/td&gt;&lt;td&gt;443&lt;/td&gt;&lt;td&gt;Tcp&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;AllowAzureLB&lt;/td&gt;&lt;td&gt;140&lt;/td&gt;&lt;td&gt;AzureLB&lt;/td&gt;&lt;td&gt;*&lt;/td&gt;&lt;td&gt;443&lt;/td&gt;&lt;td&gt;Tcp&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;AllowBastionComm8080&lt;/td&gt;&lt;td&gt;150&lt;/td&gt;&lt;td&gt;VNet&lt;/td&gt;&lt;td&gt;VNet&lt;/td&gt;&lt;td&gt;8080&lt;/td&gt;&lt;td&gt;*&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;AllowBastionComm5701&lt;/td&gt;&lt;td&gt;160&lt;/td&gt;&lt;td&gt;VNet&lt;/td&gt;&lt;td&gt;VNet&lt;/td&gt;&lt;td&gt;5701&lt;/td&gt;&lt;td&gt;*&lt;/td&gt;&lt;/tr&gt;&lt;tr style=&quot;background:#FFEBEE;&quot;&gt;&lt;td&gt;DenyAllInbound&lt;/td&gt;&lt;td&gt;4096&lt;/td&gt;&lt;td&gt;*&lt;/td&gt;&lt;td&gt;*&lt;/td&gt;&lt;td&gt;*&lt;/td&gt;&lt;td&gt;*&lt;/td&gt;&lt;/tr&gt;&lt;tr style=&quot;background:#FFF3E0;&quot;&gt;&lt;td colspan=&quot;6&quot; style=&quot;font-weight:bold;text-align:center;padding:4px;&quot;&gt;↑ Outbound Rules&lt;/td&gt;&lt;/tr&gt;&lt;tr style=&quot;background:#f5f5f5;font-weight:bold;&quot;&gt;&lt;td&gt;Name&lt;/td&gt;&lt;td&gt;Pri&lt;/td&gt;&lt;td&gt;Src&lt;/td&gt;&lt;td&gt;Dst&lt;/td&gt;&lt;td&gt;Port&lt;/td&gt;&lt;td&gt;Proto&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;AllowSshOutbound&lt;/td&gt;&lt;td&gt;100&lt;/td&gt;&lt;td&gt;*&lt;/td&gt;&lt;td&gt;VNet&lt;/td&gt;&lt;td&gt;22&lt;/td&gt;&lt;td&gt;Tcp&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;AllowRdpOutbound&lt;/td&gt;&lt;td&gt;101&lt;/td&gt;&lt;td&gt;*&lt;/td&gt;&lt;td&gt;VNet&lt;/td&gt;&lt;td&gt;3389&lt;/td&gt;&lt;td&gt;Tcp&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;AllowAzureCloud&lt;/td&gt;&lt;td&gt;110&lt;/td&gt;&lt;td&gt;*&lt;/td&gt;&lt;td&gt;AzureCloud&lt;/td&gt;&lt;td&gt;443&lt;/td&gt;&lt;td&gt;Tcp&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;AllowBastionOut8080&lt;/td&gt;&lt;td&gt;120&lt;/td&gt;&lt;td&gt;VNet&lt;/td&gt;&lt;td&gt;VNet&lt;/td&gt;&lt;td&gt;8080&lt;/td&gt;&lt;td&gt;*&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;AllowBastionOut5701&lt;/td&gt;&lt;td&gt;130&lt;/td&gt;&lt;td&gt;VNet&lt;/td&gt;&lt;td&gt;VNet&lt;/td&gt;&lt;td&gt;5701&lt;/td&gt;&lt;td&gt;*&lt;/td&gt;&lt;/tr&gt;&lt;tr style=&quot;background:#FFEBEE;&quot;&gt;&lt;td&gt;DenyAllOutbound&lt;/td&gt;&lt;td&gt;4096&lt;/td&gt;&lt;td&gt;*&lt;/td&gt;&lt;td&gt;Internet&lt;/td&gt;&lt;td&gt;*&lt;/td&gt;&lt;td&gt;*&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;" style="text;html=1;strokeColor=#0078D4;fillColor=#FAFAFA;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;fontSize=10;" parent="1" vertex="1">
+                    <mxGeometry x="1590" y="100" width="380" height="400" as="geometry"/>
+                </mxCell>
+                <mxCell id="dev-nsg-table-pe" value="&lt;table border=&quot;1&quot; cellpadding=&quot;4&quot; cellspacing=&quot;0&quot; style=&quot;border-collapse:collapse;font-size:10px;width:100%;&quot;&gt;&lt;tr style=&quot;background:#0078D4;color:white;&quot;&gt;&lt;td colspan=&quot;6&quot; style=&quot;font-weight:bold;padding:6px;&quot;&gt;🛡 nsg_rus_dev_private_endpoint_gwc&lt;/td&gt;&lt;/tr&gt;&lt;tr style=&quot;background:#E3F2FD;&quot;&gt;&lt;td colspan=&quot;6&quot; style=&quot;font-weight:bold;text-align:center;padding:4px;&quot;&gt;↓ Inbound Rules&lt;/td&gt;&lt;/tr&gt;&lt;tr style=&quot;color:#888888;&quot;&gt;&lt;td colspan=&quot;6&quot; style=&quot;text-align:center;font-style:italic;&quot;&gt;No custom inbound rules (Azure defaults apply)&lt;/td&gt;&lt;/tr&gt;&lt;tr style=&quot;background:#FFF3E0;&quot;&gt;&lt;td colspan=&quot;6&quot; style=&quot;font-weight:bold;text-align:center;padding:4px;&quot;&gt;↑ Outbound Rules&lt;/td&gt;&lt;/tr&gt;&lt;tr style=&quot;color:#888888;&quot;&gt;&lt;td colspan=&quot;6&quot; style=&quot;text-align:center;font-style:italic;&quot;&gt;No custom outbound rules (Azure defaults apply)&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;" style="text;html=1;strokeColor=#0078D4;fillColor=#FAFAFA;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;fontSize=10;" parent="1" vertex="1">
+                    <mxGeometry x="1590" y="520" width="380" height="160" as="geometry"/>
+                </mxCell>
+                <mxCell id="dev-nsg-table-app" value="&lt;table border=&quot;1&quot; cellpadding=&quot;4&quot; cellspacing=&quot;0&quot; style=&quot;border-collapse:collapse;font-size:10px;width:100%;&quot;&gt;&lt;tr style=&quot;background:#0078D4;color:white;&quot;&gt;&lt;td colspan=&quot;6&quot; style=&quot;font-weight:bold;padding:6px;&quot;&gt;🛡 nsg_rus_dev_app_gwc&lt;/td&gt;&lt;/tr&gt;&lt;tr style=&quot;background:#E3F2FD;&quot;&gt;&lt;td colspan=&quot;6&quot; style=&quot;font-weight:bold;text-align:center;padding:4px;&quot;&gt;↓ Inbound Rules&lt;/td&gt;&lt;/tr&gt;&lt;tr style=&quot;color:#888888;&quot;&gt;&lt;td colspan=&quot;6&quot; style=&quot;text-align:center;font-style:italic;&quot;&gt;No custom inbound rules (Azure defaults apply)&lt;/td&gt;&lt;/tr&gt;&lt;tr style=&quot;background:#FFF3E0;&quot;&gt;&lt;td colspan=&quot;6&quot; style=&quot;font-weight:bold;text-align:center;padding:4px;&quot;&gt;↑ Outbound Rules&lt;/td&gt;&lt;/tr&gt;&lt;tr style=&quot;color:#888888;&quot;&gt;&lt;td colspan=&quot;6&quot; style=&quot;text-align:center;font-style:italic;&quot;&gt;No custom outbound rules (Azure defaults apply)&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;" style="text;html=1;strokeColor=#0078D4;fillColor=#FAFAFA;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;fontSize=10;" parent="1" vertex="1">
+                    <mxGeometry x="1590" y="700" width="380" height="160" as="geometry"/>
+                </mxCell>
+                <mxCell id="dev-edge-hub-spoke" value="hub connection&#xa;internet_security" style="rounded=1;orthogonalLoop=1;jettySize=auto;endArrow=block;startArrow=block;endFill=1;startFill=1;strokeColor=#0078D4;strokeWidth=2;flowAnimation=1;html=1;fontSize=9;" parent="1" source="dev-vhub" target="dev-vnet" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="dev-edge-fwp-fw" value="firewall_policy_id" style="rounded=1;orthogonalLoop=1;jettySize=auto;endArrow=block;endFill=1;strokeColor=#0078D4;flowAnimation=1;html=1;fontSize=9;" parent="1" source="dev-fwp" target="dev-fw" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="dev-edge-ippool-vhub" value="ip_pool_id" style="rounded=1;orthogonalLoop=1;jettySize=auto;dashed=1;dashPattern=1 4;endArrow=open;endFill=0;strokeColor=#999999;flowAnimation=1;html=1;fontSize=9;" parent="1" source="dev-ippool" target="dev-vhub" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="dev-edge-ippool-vnet" value="ip_pool_id" style="rounded=1;orthogonalLoop=1;jettySize=auto;dashed=1;dashPattern=1 4;endArrow=open;endFill=0;strokeColor=#999999;flowAnimation=1;html=1;fontSize=9;" parent="1" source="dev-ippool" target="dev-vnet" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="dev-edge-onprem-vpn" value="VPN Tunnel" style="rounded=1;orthogonalLoop=1;jettySize=auto;dashed=1;endArrow=open;endFill=0;strokeColor=#8d6e32;strokeWidth=2;flowAnimation=1;html=1;fontSize=9;" parent="1" source="dev-onprem" target="dev-vpngw" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="dev-edge-pe-blob-storage" value="" style="rounded=1;orthogonalLoop=1;jettySize=auto;endArrow=block;endFill=1;strokeColor=#0078D4;flowAnimation=1;html=1;fontSize=9;" parent="1" source="dev-pe-blob" target="dev-storage" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="dev-edge-pe-vault-kv" value="" style="rounded=1;orthogonalLoop=1;jettySize=auto;endArrow=block;endFill=1;strokeColor=#0078D4;flowAnimation=1;html=1;fontSize=9;" parent="1" source="dev-pe-vault" target="dev-kv" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="dev-nsg-edge-bastion" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;flowAnimation=1;" parent="1" source="dev-nsg-bastion" target="dev-nsg-table-bastion" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="dev-nsg-edge-pe" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;flowAnimation=1;" parent="1" source="dev-nsg-pe" target="dev-nsg-table-pe" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="dev-nsg-edge-app" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;flowAnimation=1;" parent="1" source="dev-nsg-app" target="dev-nsg-table-app" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
